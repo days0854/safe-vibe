@@ -9,6 +9,7 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 
 - 카탈로그 버전 **0.2.0**. 버전을 올리지 말 것.
 - 같은 폴더의 [`catalog.json`](catalog.json)만 본다.
+- 활용 예시 100건은 `catalog.json`의 `cases`와 레포 `cases/pipa.json`이다. 항목명·조문번호·잘 틀리는 지점만. 원문 PDF·법령 전문 없음.
 - 법률 조문 전문·가이드 PDF·원문 템플릿을 붙이거나 인용하지 않는다.
 
 **이 스킬은 법률 자문이 아니다. 적법·위법 판단을 하지 않으며, 합격·준수 증명이 아니다.**
