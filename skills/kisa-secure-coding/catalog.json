@@ -1,0 +1,1083 @@
+{
+  "id": "kisa-sw-secure-coding",
+  "version": "0.3.0",
+  "updated": "2026-08-19",
+  "implementation_count": 49,
+  "design_count": 20,
+  "rules": [
+    {
+      "id": "IMP-1.1",
+      "name": "SQL 삽입",
+      "cwe": "CWE-89",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "SQL 질의문을 생성할 때 검증되지 않은 외부 입력값을 허용하여 악의적인 질의문이 실행가능한 보안약점",
+      "agent_checks": [
+        "SQL을 f-string·%·+ 로 만들고 있지 않은가?",
+        "Django ORM / SQLAlchemy / execute(sql, params) 바인딩을 쓰는가?",
+        "raw()·extra()·text()에 요청값이 그대로 들어가진 않는가?"
+      ],
+      "unsafe": [
+        "string-interpolated SQL",
+        "raw query with request query or body",
+        "f-string or % format passed to cursor.execute",
+        "raw()/extra()/text() with request.GET or POST"
+      ],
+      "fix": "Django ORM·SQLAlchemy bindparam 또는 cursor.execute(sql, params)를 쓴다. 요청값을 SQL 문자열에 붙이지 않는다."
+    },
+    {
+      "id": "IMP-1.2",
+      "name": "코드 삽입",
+      "cwe": "CWE-94, CWE-95",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "프로세스가 외부 입력값을 코드(명령어)로 해석·실행할 수 있고 프로세스에 검증되지 않은 외부 입력값을 허용한 경우 악의적인 코드가 실행 가능한 보안약점",
+      "agent_checks": [
+        "eval/exec/Function에 요청값이 들어가는가?",
+        "허용 동작만 화이트리스트로 분기하는가?"
+      ],
+      "unsafe": [
+        "dynamic eval of user input",
+        "Function constructor with user input",
+        "eval/exec of request data",
+        "compile() then exec of user string"
+      ],
+      "fix": "eval/exec에 요청값을 넣지 않는다. Django/Flask 뷰에서는 허용 동작만 분기로 실행한다."
+    },
+    {
+      "id": "IMP-1.3",
+      "name": "경로 조작 및 자원 삽입",
+      "cwe": "CWE-22, CWE-99",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "시스템 자원 접근경로 또는 자원제어 명령어에 검증되지 않은 외부 입력값을 허용하여 시스템 자원에 무단 접근 및 악의적인 행위가 가능한 보안약점",
+      "agent_checks": [
+        "경로에 ../ 또는 요청 파일명이 그대로 붙는가?",
+        "허용 루트 밖으로 realpath가 나가는지 검사하는가?"
+      ],
+      "unsafe": [
+        "path join with parent-directory user input",
+        "user-controlled socket host",
+        "os.path.join with request path",
+        "open() of user-supplied filename"
+      ],
+      "fix": "경로를 정규화하고 허용 디렉터리 밖으로 못 나가게 한다. Flask send_file 인자도 동일하다."
+    },
+    {
+      "id": "IMP-1.4",
+      "name": "크로스사이트 스크립트",
+      "cwe": "CWE-79",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "사용자 브라우저에 검증되지 않은 외부 입력값을 허용하여 악의적인 스크립트가 실행 가능한 보안약점",
+      "agent_checks": [
+        "innerHTML / |safe / Markup에 원문을 넣는가?",
+        "자동 이스케이프를 끄지 않았는가?"
+      ],
+      "unsafe": [
+        "innerHTML with user data",
+        "React raw HTML inject",
+        "|safe / Markup() on request text",
+        "mark_safe of user HTML"
+      ],
+      "fix": "Django 템플릿 자동이스케이프를 유지하고 |safe·Markup에 원문을 넣지 않는다."
+    },
+    {
+      "id": "IMP-1.5",
+      "name": "운영체제 명령어 삽입",
+      "cwe": "CWE-78",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "운영체제 명령어를 생성할 때 검증되지 않은 외부 입력값을 허용하여 악의적인 명령어가 실행 가능한 보안약점",
+      "agent_checks": [
+        "os.system / shell=True / exec에 요청 문자열이 붙는가?",
+        "실행 파일과 인자를 배열로 넘기는가?"
+      ],
+      "unsafe": [
+        "shell exec with user string",
+        "os.system / subprocess shell=True",
+        "os.popen of request string"
+      ],
+      "fix": "shell=True를 끄고 인자 배열로 실행한다. Django/Flask에서 요청 문자열로 셸을 만들지 않는다."
+    },
+    {
+      "id": "IMP-1.6",
+      "name": "위험한 형식 파일 업로드",
+      "cwe": "CWE-434",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "파일의 확장자 등 파일형식에 대한 검증없이 파일 업로드를 허용하여 공격이 가능한 보안약점",
+      "agent_checks": [
+        "원본 파일명·확장자만 믿는가?",
+        "저장 이름은 서버가 새로 만들고 웹루트 밖인가?",
+        "실행 가능 확장자를 거부하는가?"
+      ],
+      "unsafe": [
+        "upload trusted by original filename or extension",
+        "save(file.filename)",
+        "join(..., request.FILES name)"
+      ],
+      "fix": "확장자 허용 목록을 적용하고 저장 이름은 서버가 새로 만든다. 웹 루트에 원본명으로 두지 않는다."
+    },
+    {
+      "id": "IMP-1.7",
+      "name": "신뢰되지 않는 URL 주소로 자동접속 연결",
+      "cwe": "CWE-601",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "URL 링크 생성에 검증되지 않은 외부 입력값을 허용하여 악의적인 사이트로 자동 접속 가능한 보안약점",
+      "agent_checks": [
+        "이동 URL이 요청 파라미터 그대로인가?",
+        "허용 도메인 목록 밖이면 거절하는가?"
+      ],
+      "unsafe": [
+        "redirect to request-provided URL",
+        "redirect(request.GET url)",
+        "HttpResponseRedirect of next= param"
+      ],
+      "fix": "Django/Flask redirect 목표는 허용 경로 목록만 받는다. 절대 URL 파라미터를 그대로 쓰지 않는다."
+    },
+    {
+      "id": "IMP-1.8",
+      "name": "부적절한 XML 외부 개체 참조",
+      "cwe": "CWE-611",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "임의로 조작된 XML 외부개체에 대한 적절한 검증 없이 참조를 허용하여 공격이 가능한 보안약점",
+      "agent_checks": [
+        "외부 엔티티(XXE)가 켜져 있는가?",
+        "네트워크·로컬 파일 해석을 끄고 파싱하는가?"
+      ],
+      "unsafe": [
+        "XML parser with external entities enabled",
+        "lxml resolve_entities=True",
+        "xml.etree parse of untrusted file with entities"
+      ],
+      "fix": "외부 엔티티를 끈 파서를 쓴다. defusedxml 또는 엔티티 비활성 설정을 기본으로 한다."
+    },
+    {
+      "id": "IMP-1.9",
+      "name": "XML 삽입",
+      "cwe": "CWE-643",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "XQuery, XPath 질의문을 생성할 때 검증되지 않은 외부 입력값을 허용하여 악의적인 질의문이 실행 가능한 보안약점",
+      "agent_checks": [
+        "필터를 f-string이나 + 로 붙이는가?",
+        "바인딩 또는 이스케이프를 쓰는가?"
+      ],
+      "unsafe": [
+        "string-built XPath",
+        "f-string XPath or XML element",
+        "string-concat then etree.fromstring"
+      ],
+      "fix": "XPath는 파라미터 바인딩을 쓰고 XML은 이스케이프 후 조립한다. 요청값을 태그 안에 붙이지 않는다."
+    },
+    {
+      "id": "IMP-1.10",
+      "name": "LDAP 삽입",
+      "cwe": "CWE-90",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "LDAP 명령문을 생성할 때 검증되지 않은 외부 입력값을 허용하여 악의적인 명령어가 실행 가능한 보안약점",
+      "agent_checks": [
+        "필터 문자열에 요청값을 그대로 붙이는가?",
+        "LDAP 특수문자를 이스케이프하는가?"
+      ],
+      "unsafe": [
+        "string-built LDAP filter",
+        "ldap filter built with % or f-string",
+        "simple_bind with raw user DN"
+      ],
+      "fix": "LDAP 필터 특수문자를 이스케이프한다. Django/Flask 로그인 필터에 요청값을 그대로 넣지 않는다."
+    },
+    {
+      "id": "IMP-1.11",
+      "name": "크로스사이트 요청 위조",
+      "cwe": "CWE-352",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "사용자 브라우저에 검증되지 않은 외부 입력값을 허용하여 사용자 본인의 의지와는 무관하게 공격자가 의도한 행위가 실행 가능한 보안약점",
+      "agent_checks": [
+        "CSRF 토큰 또는 SameSite 쿠키가 있는가?",
+        "GET만으로 변경이 일어나는가?"
+      ],
+      "unsafe": [
+        "state-changing GET without CSRF token",
+        "state-changing view without csrf_protect",
+        "Flask POST without CSRF"
+      ],
+      "fix": "Django CsrfViewMiddleware 또는 Flask-WTF CSRF를 켠다. GET으로 변경하지 않는다."
+    },
+    {
+      "id": "IMP-1.12",
+      "name": "서버사이드 요청 위조",
+      "cwe": "CWE-918",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "서버 간 처리되는 요청에 검증되지 않은 외부 입력값을 허용하여 공격자가 의도한 서버로 전송하거나 변조하는 보안약점",
+      "agent_checks": [
+        "호출 대상이 요청 URL 그대로인가?",
+        "내부망·메타데이터 주소를 막는가?"
+      ],
+      "unsafe": [
+        "HTTP client call with user-controlled URL",
+        "requests.get(request.GET url)",
+        "urlopen of user URL"
+      ],
+      "fix": "호출 호스트 허용 목록을 두고 루프백·링크로컬을 막는다. Flask/Django에서 요청 URL을 그대로 프록시하지 않는다."
+    },
+    {
+      "id": "IMP-1.13",
+      "name": "HTTP 응답분할",
+      "cwe": "CWE-113",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "HTTP 응답헤더에 개행문자(CR이나 LF)가 포함된 검증되지 않은 외부 입력값을 허용하여 악의적인 코드가 실행 가능한 보안약점",
+      "agent_checks": [
+        "헤더 값에 CR/LF가 들어갈 수 있는가?",
+        "개행을 제거한 뒤에만 헤더에 쓰는가?"
+      ],
+      "unsafe": [
+        "set_cookie / header value containing \\r or \\n",
+        "Location built from request"
+      ],
+      "fix": "헤더·쿠키 값에서 CR/LF를 제거한다. Django HttpResponse 헤더에 요청 원문을 넣지 않는다."
+    },
+    {
+      "id": "IMP-1.14",
+      "name": "정수형 오버플로우",
+      "cwe": "CWE-190",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "정수형 변수에 저장된 값이 허용된 정수 값 범위를 벗어나 프로그램이 예기치 않게 동작 가능한 보안약점",
+      "agent_checks": [
+        "외부 숫자를 범위 검사 없이 쓰는가?",
+        "곱·더하기 결과가 음수나 과대가 되지 않는가?"
+      ],
+      "unsafe": [
+        "int(request) used as size or count without bounds",
+        "range or alloc from user int"
+      ],
+      "fix": "정수 입력을 허용 범위로 자른 뒤 쓴다. Django/Flask form IntegerField에 min/max를 둔다."
+    },
+    {
+      "id": "IMP-1.15",
+      "name": "보안기능 결정에 사용되는 부적절한 입력값",
+      "cwe": "CWE-807",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "보안기능(인증, 권한부여 등) 결정에 검증되지 않은 외부 입력값을 허용하여 보안기능을 우회하는 보안약점",
+      "agent_checks": [
+        "hidden/쿠키/쿼리로 관리자 여부를 받는가?",
+        "서버 세션의 역할만 믿는가?"
+      ],
+      "unsafe": [
+        "hidden field or cookie decides admin role",
+        "role taken from request.POST or cookie",
+        "is_admin hidden field"
+      ],
+      "fix": "역할은 서버 세션·DB에서만 읽는다. request 값으로 관리자 여부를 정하지 않는다."
+    },
+    {
+      "id": "IMP-1.16",
+      "name": "메모리 버퍼 오버플로우",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "메모리 버퍼의 경계값을 넘어서 메모리값을 읽거나 저장하여 예기치 않은 결과가 발생하는 보안약점",
+      "agent_checks": [
+        "복사 길이가 버퍼 크기보다 클 수 있는가?",
+        "길이 검사를 먼저 하는가?"
+      ]
+    },
+    {
+      "id": "IMP-1.17",
+      "name": "포맷 스트링 삽입",
+      "cwe": "CWE-134",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "str.format등 포맷 스트링 제어함수에 검증되지 않은 외부 입력값을 허용하여 발생하는 보안약점",
+      "agent_checks": [
+        "사용자 입력이 format 문자열 자체가 되는가?",
+        "포맷은 상수이고 값은 인자로만 넘기는가?"
+      ],
+      "unsafe": [
+        "logging or % with user-controlled format string",
+        "str.format(user_fmt)"
+      ],
+      "fix": "포맷 문자열은 코드에 고정하고 값은 인자로만 넘긴다. logging에서 사용자 포맷을 받지 않는다."
+    },
+    {
+      "id": "IMP-2.1",
+      "name": "적절한 인증 없는 중요 기능 허용",
+      "cwe": "CWE-306",
+      "category": "보안기능",
+      "summary": "중요정보(금융정보, 개인정보, 인증정보 등)를 적절한 인증없이 열람(또는 변경) 가능한 보안약점",
+      "agent_checks": [
+        "인증 미들웨어/데코레이터가 붙어 있는가?",
+        "로그인 없이 열람·변경이 되는가?"
+      ],
+      "unsafe": [
+        "sensitive route with no auth middleware",
+        "sensitive view without login_required",
+        "Flask route missing login check"
+      ],
+      "fix": "Django login_required / LoginRequiredMixin 또는 Flask-Login으로 감싼다. 인증 없이 민감 뷰를 열지 않는다."
+    },
+    {
+      "id": "IMP-2.2",
+      "name": "부적절한 인가",
+      "cwe": "CWE-285",
+      "category": "보안기능",
+      "summary": "중요자원에 접근할 때 적절한 제어가 없어 비인가자의 접근이 가능한 보안약점",
+      "agent_checks": [
+        "로그인만 확인하고 소유자는 안 보는가?",
+        "객체 단위 인가를 서버에서 하는가?"
+      ],
+      "unsafe": [
+        "auth but no object-level authorization",
+        "object fetched by id without owner check",
+        "queryset without user filter"
+      ],
+      "fix": "객체 소유자 또는 권한을 서버에서 확인한다. pk만으로 다른 사용자 레코드를 주지 않는다."
+    },
+    {
+      "id": "IMP-2.3",
+      "name": "중요한 자원에 대한 잘못된 권한 설정",
+      "cwe": "CWE-732",
+      "category": "보안기능",
+      "summary": "중요자원에 적절한 접근 권한을 부여하지 않아 중요정보가 노출·수정 가능한 보안약점",
+      "agent_checks": [
+        "누구나 읽기/쓰기 가능한가?",
+        "최소 권한만 주는가?"
+      ],
+      "unsafe": [
+        "world-writable resource permissions",
+        "umask 0 / chmod 0o777",
+        "world-writable upload dir"
+      ],
+      "fix": "업로드 디렉터리·설정 파일은 최소 권한으로 둔다. 웹 서버 계정만 읽게 한다."
+    },
+    {
+      "id": "IMP-2.4",
+      "name": "취약한 암호화 알고리즘 사용",
+      "cwe": "CWE-327",
+      "category": "보안기능",
+      "summary": "중요정보 (금융정보, 개인정보, 인증정보 등)의 기밀성을 보장할 수 없는 취약한 암호화 알고리즘을 사용하여 정보가 노출 가능한 보안약점",
+      "agent_checks": [
+        "MD5/SHA1/DES/ECB를 기밀성에 쓰는가?",
+        "현재 권고 알고리즘·모드인가?"
+      ],
+      "unsafe": [
+        "broken cipher for secrecy",
+        "legacy hash used for confidentiality",
+        "ECB mode",
+        "hashlib.md5 / sha1 for secrets"
+      ],
+      "fix": "비밀번호는 Django make_password 등 권고 해시를 쓰고, 기밀성은 AES-GCM 등 현재 알고리즘을 쓴다."
+    },
+    {
+      "id": "IMP-2.5",
+      "name": "암호화되지 않은 중요정보",
+      "cwe": "CWE-312, CWE-319",
+      "category": "보안기능",
+      "summary": "중요정보(패스워드, 개인정보 등) 전송 시 암호화 또는 안전한 통신채널을 이용하지 않거나, 저장 시 암호화 하지 않아 정보가 노출 가능한 보안약점",
+      "agent_checks": [
+        "평문으로 파일·로그·DB에 쓰는가?",
+        "전송은 TLS이고 저장은 암호화인가?"
+      ],
+      "unsafe": [
+        "password or PII over cleartext HTTP",
+        "plaintext storage of secrets",
+        "password/ssn written or logged in plaintext",
+        "DEBUG print of request.password"
+      ],
+      "fix": "비밀번호·식별번호는 저장 전 암호화하고 로그에 남기지 않는다. Flask/Django 설정에 평문 시크릿을 두지 않는다."
+    },
+    {
+      "id": "IMP-2.6",
+      "name": "하드코드된 중요정보",
+      "cwe": "CWE-259, CWE-321",
+      "category": "보안기능",
+      "summary": "소스코드에 중요정보(패스워드, 암호화키 등)를 직접 코딩하여 소스코드 유출 시 중요정보가 노출되고 주기적 변경이 어려운 보안약점",
+      "agent_checks": [
+        "소스에 비밀번호/키 리터럴이 있는가?",
+        "환경변수나 비밀저장소를 읽는가?"
+      ],
+      "unsafe": [
+        "password or API key string literal",
+        "password = '...' in settings.py",
+        "SECRET_KEY or API key literal"
+      ],
+      "fix": "SECRET_KEY·DB 비밀번호는 환경변수에서 읽는다. 소스에 리터럴로 두지 않는다."
+    },
+    {
+      "id": "IMP-2.7",
+      "name": "충분하지 않은 키 길이 사용",
+      "cwe": "CWE-326",
+      "category": "보안기능",
+      "summary": "암호화 등에 사용되는 키의 길이가 충분하지 않아 데이터의 기밀성·무결성을 보장할 수 없는 보안약점",
+      "agent_checks": [
+        "키 길이가 1024비트 이하인가?",
+        "현재 권고 길이를 쓰는가?"
+      ],
+      "unsafe": [
+        "asymmetric key shorter than current guidance",
+        "RSA.generate(1024) or key_size<=1024",
+        "DSA bits 1024"
+      ],
+      "fix": "비대칭 키는 현재 권고 길이(RSA 2048+)로 생성한다. cryptography 라이브러리 기본값을 따른다."
+    },
+    {
+      "id": "IMP-2.8",
+      "name": "적절하지 않은 난수 값 사용",
+      "cwe": "CWE-330",
+      "category": "보안기능",
+      "summary": "사용한 난수가 예측 가능하여, 공격자가 다음 난수를 예상해서 시스템을 공격 가능한 보안약점",
+      "agent_checks": [
+        "Math.random / random.random을 쓰는가?",
+        "암호학 난수(secrets, crypto)인가?"
+      ],
+      "unsafe": [
+        "non-crypto RNG used for tokens",
+        "random.random / randint for token",
+        "uuid used as secret without CSPRNG"
+      ],
+      "fix": "토큰·난수는 secrets 또는 os.urandom을 쓴다. Django get_random_string의 기본 소스도 CSPRNG인지 확인한다."
+    },
+    {
+      "id": "IMP-2.9",
+      "name": "취약한 비밀번호 허용",
+      "cwe": "CWE-521",
+      "category": "보안기능",
+      "summary": "패스워드 조합규칙(영문, 숫자, 특수문자 등) 미흡 및 길이가 충분하지 않아 패스워드가 노출 가능한 보안약점",
+      "agent_checks": [
+        "짧은 비밀번호나 단순 조합을 받는가?",
+        "최소 길이와 복잡도를 강제하는가?"
+      ],
+      "unsafe": [
+        "no password complexity or length policy",
+        "User.objects.create no password validators",
+        "Flask accept short password"
+      ],
+      "fix": "AUTH_PASSWORD_VALIDATORS 또는 동등한 길이·조합 규칙을 적용한다."
+    },
+    {
+      "id": "IMP-2.10",
+      "name": "부적절한 전자서명 확인",
+      "cwe": "CWE-347",
+      "category": "보안기능",
+      "summary": "프로그램, 라이브러리, 코드의 전자서명에 대한 유효성 검증이 적절하지 않아 공격자의 악의적인 코드가 실행 가능한 보안약점",
+      "agent_checks": [
+        "서명 확인을 건너뛰는가?",
+        "신뢰 키로 서명을 검증하는가?"
+      ],
+      "unsafe": [
+        "skip signature verification",
+        "skip signature check on package or webhook",
+        "trust downloaded wheel as-is"
+      ],
+      "fix": "웹훅·패키지·업데이트는 서명 또는 HMAC을 검증한 뒤에만 신뢰한다."
+    },
+    {
+      "id": "IMP-2.11",
+      "name": "부적절한 인증서 유효성 검증",
+      "cwe": "CWE-295",
+      "category": "보안기능",
+      "summary": "인증서에 대한 유효성 검증이 적절하지 않아 발생하는 보안약점",
+      "agent_checks": [
+        "verify=False / rejectUnauthorized:false 인가?",
+        "체인·호스트·만료를 검사하는가?"
+      ],
+      "unsafe": [
+        "TLS certificate verification disabled",
+        "requests(..., verify=False)",
+        "ssl._create_unverified_context"
+      ],
+      "fix": "TLS 검증을 끄지 않는다. requests/httpx는 기본 verify=True를 유지한다."
+    },
+    {
+      "id": "IMP-2.12",
+      "name": "사용자 하드디스크에 저장되는 쿠키를 통한 정보노출",
+      "cwe": "CWE-539",
+      "category": "보안기능",
+      "summary": "쿠키(세션 ID, 사용자 권한정보 등 중요정보)를 사용자 하드디스크에 저장하여 중요정보가 노출 가능한 보안약점",
+      "agent_checks": [
+        "HttpOnly/Secure가 빠졌는가?",
+        "디스크에 남는 쿠키에 비밀을 넣는가?"
+      ],
+      "unsafe": [
+        "cookie without HttpOnly",
+        "persistent cookie holding secrets",
+        "set_cookie without httponly",
+        "session cookie missing secure flag"
+      ],
+      "fix": "세션 쿠키에 HttpOnly·Secure·SameSite를 켠다. Django SESSION_COOKIE_* 설정을 확인한다."
+    },
+    {
+      "id": "IMP-2.13",
+      "name": "주석문 안에 포함된 시스템 주요정보",
+      "cwe": "CWE-615",
+      "category": "보안기능",
+      "summary": "소스코드 주석문에 인증정보 등 시스템 주요정보가 포함되어 소스코드 노출 시 주요정보도 노출 가능한 보안약점",
+      "agent_checks": [
+        "주석에 비밀번호·키가 있는가?",
+        "배포 전에 제거했는가?"
+      ],
+      "unsafe": [
+        "credentials written in source comments",
+        "# password= in source comment",
+        "docstring containing api key"
+      ],
+      "fix": "주석·독스트링에 계정·키를 적지 않는다. 샘플은 플레이스홀더만 남긴다."
+    },
+    {
+      "id": "IMP-2.14",
+      "name": "솔트 없이 일방향 해쉬 함수 사용",
+      "cwe": "CWE-759",
+      "category": "보안기능",
+      "summary": "솔트를 사용하지 않고 생성된 해쉬 값으로부터 공격자가 미리 계산된 레인보우 테이블을 이용하여 해쉬 적용 이전 원본 정보를 복원가능한 보안약점",
+      "agent_checks": [
+        "솔트 없이 sha256(password)만 하는가?",
+        "고유 솔트와 느린 비밀번호 해시를 쓰는가?"
+      ],
+      "unsafe": [
+        "one-way hash of password with no salt",
+        "hashlib.sha256(password) without salt",
+        "md5(password)"
+      ],
+      "fix": "고유 솔트와 PBKDF2/Argon2/bcrypt를 쓴다. Django 비밀번호 해시기를 그대로 활용한다."
+    },
+    {
+      "id": "IMP-2.15",
+      "name": "무결성 검사 없는 코드 다운로드",
+      "cwe": "CWE-494",
+      "category": "보안기능",
+      "summary": "소스코드 또는 실행파일을 무결성 검사 없이 다운로드 받아 실행하는 경우, 공격자의 악의적인 코드가 실행 가능한 보안약점",
+      "agent_checks": [
+        "해시/서명 없이 실행하는가?",
+        "받은 뒤에 무결성을 확인하는가?"
+      ],
+      "unsafe": [
+        "download and run script without integrity check",
+        "urlretrieve then exec/import",
+        "pip install from unsigned URL then run"
+      ],
+      "fix": "내려받은 코드는 해시 또는 서명을 확인한 뒤 실행한다. Django/Flask에서 원격 스크립트를 바로 import하지 않는다."
+    },
+    {
+      "id": "IMP-2.16",
+      "name": "반복된 인증시도 제한 기능 부재",
+      "cwe": "CWE-307",
+      "category": "보안기능",
+      "summary": "인증 시도 수를 제한하지 않아 공격자가 반복적으로 임의 값을 입력하여 계정 권한을 획득 가능한 보안약점",
+      "agent_checks": [
+        "무한 재시도가 가능한가?",
+        "잠금 또는 속도 제한이 있는가?"
+      ],
+      "unsafe": [
+        "login with no lockout or rate limit",
+        "login view with no throttle",
+        "unlimited authenticate() loop"
+      ],
+      "fix": "django-axes·Flask limiter 등으로 시도 횟수를 제한한다. 실패가 쌓이면 잠근다."
+    },
+    {
+      "id": "IMP-3.1",
+      "name": "경쟁조건: 검사 시점과 사용 시점(TOCTOU)",
+      "cwe": "CWE-367",
+      "category": "시간 및 상태",
+      "summary": "멀티 프로세스 상에서 자원을 검사하는 시점과 사용하는 시점이 달라서 발생하는 보안약점",
+      "agent_checks": [
+        "검사와 사용 사이에 다른 프로세스가 끼어들 수 있는가?",
+        "원자적 연산이나 락을 쓰는가?"
+      ],
+      "unsafe": [
+        "os.path.exists then open/unlink",
+        "check-then-write without lock"
+      ],
+      "fix": "존재 확인과 사용 사이에 경합이 없게 원자 연산이나 파일락을 쓴다."
+    },
+    {
+      "id": "IMP-3.2",
+      "name": "종료되지 않는 반복문 또는 재귀함수",
+      "cwe": "CWE-674, CWE-835",
+      "category": "시간 및 상태",
+      "summary": "종료조건 없는 제어문 사용으로 반복문 또는 재귀함수가 무한히 반복되어 발생할 수 있는 보안약점",
+      "agent_checks": [
+        "종료 조건이 없거나 사용자 입력이 한도인가?",
+        "최대 횟수·깊이를 두는가?"
+      ],
+      "unsafe": [
+        "loop without exit condition",
+        "unbounded recursion",
+        "while True without break bound",
+        "recursion on user-controlled depth"
+      ],
+      "fix": "루프·재귀에 최대 횟수를 둔다. 요청 크기가 종료 조건이 되지 않게 한다."
+    },
+    {
+      "id": "IMP-4.1",
+      "name": "오류 메시지 정보노출",
+      "cwe": "CWE-209",
+      "category": "에러처리",
+      "summary": "오류메시지나 스택정보에 시스템 내부구조가 포함되어 민감한 정보, 디버깅 정보가 노출 가능한 보안약점",
+      "agent_checks": [
+        "스택·SQL·경로가 응답에 실리는가?",
+        "사용자는 일반 메시지, 상세는 서버 로그인가?"
+      ],
+      "unsafe": [
+        "send exception stack to client",
+        "traceback in HttpResponse / jsonify",
+        "DEBUG=True in production"
+      ],
+      "fix": "클라이언트에는 일반 오류만 주고 traceback은 서버 로그에만 남긴다. 운영에서 DEBUG를 끈다."
+    },
+    {
+      "id": "IMP-4.2",
+      "name": "오류상황 대응 부재",
+      "cwe": "CWE-390",
+      "category": "에러처리",
+      "summary": "시스템 오류상황을 처리하지 않아 프로그램 실행정지 등 의도하지 않은 상황이 발생 가능한 보안약점",
+      "agent_checks": [
+        "except: pass 처럼 비어 있는가?",
+        "실패 시 기록하거나 안전하게 중단하는가?"
+      ],
+      "unsafe": [
+        "empty catch",
+        "except: pass",
+        "except Exception: pass"
+      ],
+      "fix": "오류를 무시하지 않는다. 기록하거나 실패 닫힘으로 처리한다."
+    },
+    {
+      "id": "IMP-4.3",
+      "name": "부적절한 예외 처리",
+      "cwe": "CWE-754",
+      "category": "에러처리",
+      "summary": "예외사항을 부적절하게 처리하여 의도하지 않은 상황이 발생 가능한 보안약점",
+      "agent_checks": [
+        "bare except: 로 모든 오류를 삼키는가?",
+        "예상 예외만 처리하는가?"
+      ],
+      "unsafe": [
+        "catch that swallows the error",
+        "catch of the wrong type",
+        "bare except:",
+        "catch-all that hides bugs"
+      ],
+      "fix": "예상한 예외 타입만 잡고, 그 외는 상위로 보낸다. bare except를 쓰지 않는다."
+    },
+    {
+      "id": "IMP-5.1",
+      "name": "Null Pointer 역참조",
+      "cwe": "CWE-476",
+      "category": "코드오류",
+      "summary": "변수의 주소 값이 Null인 객체를 참조하는 보안약점",
+      "agent_checks": [
+        "None/undefined 검사를 빠뜨렸는가?",
+        "없을 때 안전하게 거절하는가?"
+      ],
+      "unsafe": [
+        "property access without null check",
+        "user.profile without None check",
+        "request.user.x on AnonymousUser"
+      ],
+      "fix": "None/없는 키를 가정하지 않는다. get()과 명시적 거절로 처리한다."
+    },
+    {
+      "id": "IMP-5.2",
+      "name": "부적절한 자원 해제",
+      "cwe": "CWE-404",
+      "category": "코드오류",
+      "summary": "사용 완료된 자원을 해제하지 않아 자원이 고갈되어 새로운 입력을 처리할 수 없는 보안약점",
+      "agent_checks": [
+        "with / finally로 닫는가?",
+        "예외 경로에서도 해제되는가?"
+      ],
+      "unsafe": [
+        "open handle or listener never closed",
+        "open() without with",
+        "connection never closed on exception"
+      ],
+      "fix": "파일·DB 커넥션은 with 또는 finally로 닫는다. Django 연결 관리는 요청 종료 시 반환되게 한다."
+    },
+    {
+      "id": "IMP-5.3",
+      "name": "해제된 자원 사용",
+      "cwe": "",
+      "category": "코드오류",
+      "summary": "메모리 등 해제된 자원을 참조하여 예기치 않은 오류가 발생하는 보안약점",
+      "agent_checks": [
+        "close/free 이후 같은 객체를 쓰는가?",
+        "해제 후 참조를 비우는가?"
+      ]
+    },
+    {
+      "id": "IMP-5.4",
+      "name": "초기화되지 않은 변수 사용",
+      "cwe": "",
+      "category": "코드오류",
+      "summary": "변수를 초기화하지 않고 사용하여 예기치 않은 오류가 발생하는 보안약점",
+      "agent_checks": [
+        "초기화 없이 읽는 경로가 있는가?",
+        "선언과 동시에 기본값을 주는가?"
+      ]
+    },
+    {
+      "id": "IMP-5.5",
+      "name": "신뢰할 수 없는 데이터의 역직렬화",
+      "cwe": "CWE-502",
+      "category": "코드오류",
+      "summary": "악의적인 코드가 삽입·수정된 직렬화 데이터를 적절한 검증 없이 역직렬화하여 발생하는 보안약점",
+      "agent_checks": [
+        "요청 본문을 pickle.loads 하는가?",
+        "안전한 포맷(JSON)이거나 safe_load인가?"
+      ],
+      "unsafe": [
+        "untrusted payload deserialized as objects",
+        "native unserialize of untrusted data",
+        "pickle.loads(request.body)",
+        "yaml.load without SafeLoader"
+      ],
+      "fix": "요청 본문을 pickle하지 않는다. YAML은 safe_load, 그 외는 JSON 등 안전한 포맷을 쓴다."
+    },
+    {
+      "id": "IMP-6.1",
+      "name": "잘못된 세션에 의한 데이터 정보노출",
+      "cwe": "CWE-488, CWE-543",
+      "category": "캡슐화",
+      "summary": "잘못된 세션에 의해 인가되지 않은 사용자에게 중요정보가 노출 가능한 보안약점",
+      "agent_checks": [
+        "전역/공유 캐시에 다른 사용자 데이터가 남는가?",
+        "세션이 로그인 사용자에 묶여 있는가?"
+      ],
+      "unsafe": [
+        "session data leak across users",
+        "global cache of user data",
+        "global current_user reused across requests",
+        "cache key without user id"
+      ],
+      "fix": "세션·캐시 키에 사용자 ID를 넣고 전역 변수에 사용자 객체를 두지 않는다."
+    },
+    {
+      "id": "IMP-6.2",
+      "name": "제거되지 않고 남은 디버그 코드",
+      "cwe": "CWE-489",
+      "category": "캡슐화",
+      "summary": "디버깅을 위한 코드를 제거하지 않아 인가되지 않은 사용자에게 중요정보가 노출 가능한 보안약점",
+      "agent_checks": [
+        "debugger / pdb / 비밀 print가 남아 있는가?",
+        "디버그 전용 라우트가 열려 있는가?"
+      ],
+      "unsafe": [
+        "debug log of secrets",
+        "leftover debug route",
+        "pdb.set_trace / breakpoint()",
+        "print or log of password in TODO"
+      ],
+      "fix": "배포 전에 pdb·breakpoint·비밀 로그를 제거한다. Django DEBUG 전용 뷰도 닫는다."
+    },
+    {
+      "id": "IMP-6.3",
+      "name": "Public 메서드부터 반환된 Private 배열",
+      "cwe": "CWE-495",
+      "category": "캡슐화",
+      "summary": "Public으로 선언된 메소드에서 Private로 선언된 배열을 반환(return)하면 Private 배열의 주소 값이 외부에 노출되어 해당 Private 배열값을 외부에서 수정 가능한 보안약점",
+      "agent_checks": [
+        "원본 참조를 그대로 return 하는가?",
+        "복사본을 반환하는가?"
+      ],
+      "unsafe": [
+        "return internal array reference from a public method",
+        "return self._items live list",
+        "public method yields internal list"
+      ],
+      "fix": "내부 리스트는 copy()해서 반환한다. 호출자가 원본을 바꾸지 못하게 한다."
+    },
+    {
+      "id": "IMP-6.4",
+      "name": "Private 배열에 Public 데이터 할당",
+      "cwe": "CWE-496",
+      "category": "캡슐화",
+      "summary": "Public으로 선언된 데이터 또는 메소드의 인자가 Private로 선언된 배열에 저장되면 Private 배열을 외부에서 접근하여 수정 가능한 보안약점",
+      "agent_checks": [
+        "호출자가 준 리스트를 그대로 저장하는가?",
+        "복사한 뒤 저장하는가?"
+      ],
+      "unsafe": [
+        "assign public input onto a private array",
+        "self._items = incoming_list",
+        "private store aliased to request data"
+      ],
+      "fix": "외부에서 받은 시퀀스는 복사한 뒤 저장한다. 같은 리스트 객체를 내부 상태에 두지 않는다."
+    },
+    {
+      "id": "IMP-7.1",
+      "name": "DNS lookup에 의존한 보안결정",
+      "cwe": "CWE-350",
+      "category": "API 오용",
+      "summary": "도메인명 확인(DNS lookup)으로 보안결정을 수행할 때 악의적으로 변조된 DNS 정보로 예기치 않은 보안위협에 노출되는 보안약점",
+      "agent_checks": [
+        "역방향 DNS 결과로 인가하는가?",
+        "고정 식별자·허용 목록을 쓰는가?"
+      ],
+      "unsafe": [
+        "security decision from reverse DNS",
+        "socket.gethostbyaddr used for allow",
+        "authz from hostname only"
+      ],
+      "fix": "인가를 역방향 DNS에 두지 않는다. 인증서·토큰·고정 ID를 쓴다."
+    },
+    {
+      "id": "IMP-7.2",
+      "name": "취약한 API 사용",
+      "cwe": "",
+      "category": "API 오용",
+      "summary": "취약한 함수를 사용해서 예기치 않은 보안위협에 노출되는 보안약점",
+      "agent_checks": [
+        "폐기·취약하다고 알려진 API를 쓰는가?",
+        "SBOM으로 패키지를 추적·갱신하는가?"
+      ],
+      "unsafe": [
+        "known-vulnerable package API",
+        "no SBOM",
+        "tempfile.mktemp / os.tempnam",
+        "known-vulnerable or deprecated API"
+      ],
+      "fix": "폐기·취약 API를 피하고 패키지를 갱신한다. mktemp 대신 TemporaryFile을 쓴다."
+    }
+  ],
+  "design_rules": [
+    {
+      "id": "DES-1.1",
+      "name": "DBMS 조회 및 결과 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "DB 조회를 설계할 때 질의문과 결과 값이 외부 입력으로 바뀌지 않도록 검증 지점을 미리 정한다.",
+      "agent_checks": [
+        "질의는 미리 준비된 문장+바인딩으로 설계했는가?",
+        "조회 결과 행·컬럼을 그대로 신뢰하지 않는가?",
+        "잘못된 입력의 거절 방식이 정의되어 있는가?"
+      ],
+      "fix": "SQL은 파라미터 바인딩을 표준으로 두고, 입력·결과 모두 허용 형식을 설계한다."
+    },
+    {
+      "id": "DES-1.2",
+      "name": "XML 조회 및 결과 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "XML 조회(XPath/XQuery)와 파서 설정을 설계할 때 질의 조작과 외부 엔티티를 차단한다.",
+      "agent_checks": [
+        "XPath/XQuery에 입력을 문자열로 붙이지 않는가?",
+        "외부 엔티티 해석을 끄도록 설계했는가?"
+      ],
+      "fix": "XML 질의는 바인딩·필터를 쓰고, 파서는 외부 개체를 기본 거부하도록 설계한다."
+    },
+    {
+      "id": "DES-1.3",
+      "name": "디렉토리 서비스 조회 및 결과 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "디렉터리 서비스(LDAP 등) 조회 시 필터와 결과의 검증 방법을 설계한다.",
+      "agent_checks": [
+        "필터 조립에 사용자 원문이 들어가는가?",
+        "특수문자 이스케이프와 실패 처리가 정의되어 있는가?"
+      ],
+      "fix": "LDAP 필터는 이스케이프 규칙을 설계하고, 예상 밖 결과는 거절한다."
+    },
+    {
+      "id": "DES-1.4",
+      "name": "시스템 자원 접근 및 명령어 수행 입력값 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "경로·명령·코드 실행·서버 측 HTTP 호출에 쓰일 입력의 허용 범위와 거절 방식을 설계한다.",
+      "agent_checks": [
+        "실행 파일·경로는 화이트리스트인가?",
+        "사용자 문자열로 셸이나 eval을 만들지 않는가?",
+        "내부망 URL 호출을 막는가?"
+      ],
+      "fix": "시스템 자원과 명령은 허용 목록과 인자 분리로 설계하고, 입력 원문으로 실행하지 않는다."
+    },
+    {
+      "id": "DES-1.5",
+      "name": "웹 서비스 요청 및 결과 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "웹 응답에 섞일 요청 값의 인코딩·필터와 거절 규칙을 설계한다.",
+      "agent_checks": [
+        "출력 인코딩이 기본으로 켜지는가?",
+        "HTML 원문 삽입이 필요한 지점은 별도 승인인가?"
+      ],
+      "fix": "브라우저로 나가는 모든 사용자 데이터에 이스케이프를 기본으로 설계한다."
+    },
+    {
+      "id": "DES-1.6",
+      "name": "웹 기반 중요 기능 수행 요청 유효성 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "중요 웹 동작(변경·이동)이 위조 요청이나 임의 URL로 실행되지 않게 유효성 검사를 설계한다.",
+      "agent_checks": [
+        "CSRF 토큰 또는 동등한 보호가 있는가?",
+        "이동 URL은 허용 목록인가?"
+      ],
+      "fix": "상태 변경은 위조 방지 토큰을 요구하고, 자동 이동 URL은 허용 목록만 설계한다."
+    },
+    {
+      "id": "DES-1.7",
+      "name": "HTTP 프로토콜 유효성 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "비정상 HTTP 헤더·쿠키·Location이 두 번째 응답을 만들지 않도록 검증을 설계한다.",
+      "agent_checks": [
+        "헤더 값에서 개행을 제거하는가?",
+        "리다이렉트 목표는 선택자(허용 목록)인가?"
+      ],
+      "fix": "헤더에 넣는 값은 개행을 금지하고, 이동 주소는 시스템 허용 목록에서만 고르게 한다."
+    },
+    {
+      "id": "DES-1.8",
+      "name": "허용된 범위내 메모리 접근",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "버퍼·포맷 문자열·인덱스 접근이 허용 범위를 넘지 않도록 한도를 설계한다.",
+      "agent_checks": [
+        "복사 길이 한도가 명시되어 있는가?",
+        "포맷 문자열이 사용자 입력인가?"
+      ],
+      "fix": "메모리 접근과 포맷 출력은 상한과 상수 포맷을 설계한다."
+    },
+    {
+      "id": "DES-1.9",
+      "name": "보안기능 입력값 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "인증·인가 등 보안기능에 들어가는 값과 그 결과를 서버가 검증하도록 설계한다.",
+      "agent_checks": [
+        "역할이 쿠키·히든필드에 실리는가?",
+        "정수 한도와 null 검사가 설계에 있는가?"
+      ],
+      "fix": "권한·역할은 서버가 보관하고, 보안함수 인자는 검증 후에만 쓴다."
+    },
+    {
+      "id": "DES-1.10",
+      "name": "업로드·다운로드 파일 검증",
+      "cwe": "",
+      "category": "입력데이터 검증 및 표현",
+      "summary": "업로드·다운로드 파일의 형식, 저장 위치, 무결성·서명 확인을 설계한다.",
+      "agent_checks": [
+        "확장자·MIME 허용 목록이 있는가?",
+        "저장 경로와 실행 권한을 분리했는가?",
+        "내려받아 실행할 파일의 해시/서명을 확인하는가?"
+      ],
+      "fix": "파일은 형식·이름·위치를 서버가 통제하고, 실행 전 무결성을 확인하도록 설계한다."
+    },
+    {
+      "id": "DES-2.1",
+      "name": "인증 대상 및 방식",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "어떤 기능에 어떤 인증 방식을 쓸지 정하고, 그 방식을 건너뛰지 못하게 설계한다.",
+      "agent_checks": [
+        "중요 기능이 인증 없이 열리는가?",
+        "인증서·호스트 이름만으로 우회되지 않는가?"
+      ],
+      "fix": "중요 자원은 인증 후 사용을 기본으로 하고, 우회 경로(인증서 미검증, DNS 인가)를 설계에서 제거한다."
+    },
+    {
+      "id": "DES-2.2",
+      "name": "인증 수행 제한",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "인증 시도 횟수와 자동화 공격을 제한하는 정책을 설계한다.",
+      "agent_checks": [
+        "실패 횟수 한도와 잠금이 있는가?",
+        "우회 로그인 엔드포인트가 따로 있는가?"
+      ],
+      "fix": "반복 인증 시도에 잠금 또는 속도 제한을 설계한다."
+    },
+    {
+      "id": "DES-2.3",
+      "name": "비밀번호 관리",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "비밀번호 생성·저장·변경 규칙과 소스에 비밀을 남기지 않는 관리 방식을 설계한다.",
+      "agent_checks": [
+        "길이·조합 규칙이 있는가?",
+        "저장은 솔트 해시인가?",
+        "코드에 초기 비밀번호가 박혀 있는가?"
+      ],
+      "fix": "비밀번호 정책을 강제하고, 저장은 솔트 해시, 비밀값은 코드 밖 저장소로 설계한다."
+    },
+    {
+      "id": "DES-2.4",
+      "name": "중요자원 접근통제",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "중요 자원에 누가 어떤 권한으로 접근할지를 객체 단위로 설계한다.",
+      "agent_checks": [
+        "로그인만으로 모든 객체에 접근하는가?",
+        "파일·테이블 권한이 최소인가?"
+      ],
+      "fix": "인가를 객체·역할 단위로 두고 자원 권한은 최소로 설계한다."
+    },
+    {
+      "id": "DES-2.5",
+      "name": "암호키 관리",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "암호키의 생성·보관·교체와 소스/주석 유출 방지를 설계한다.",
+      "agent_checks": [
+        "키가 소스나 주석에 있는가?",
+        "길이·보관 위치·교체 주기가 정의되어 있는가?"
+      ],
+      "fix": "키는 충분한 길이로 생성하고 비밀저장소에 두며 소스에 남기지 않는다."
+    },
+    {
+      "id": "DES-2.6",
+      "name": "암호연산",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "쓸 알고리즘, 키 길이, 난수원, 해시 방식을 설계 단계에서 고정한다.",
+      "agent_checks": [
+        "취약 알고리즘이나 짧은 키를 허용하는가?",
+        "토큰에 예측 난수를 쓰는가?",
+        "해시 솔트가 설계에 있는가?"
+      ],
+      "fix": "권고 알고리즘·키 길이·CSPRNG·솔트 해시를 설계 기준으로 적는다."
+    },
+    {
+      "id": "DES-2.7",
+      "name": "중요정보 저장",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "중요정보를 어디에 어떤 암호로 저장할지, 쿠키에 실을지를 설계한다.",
+      "agent_checks": [
+        "평문 저장이 남아 있는가?",
+        "쿠키에 권한·비밀번호가 실리는가?"
+      ],
+      "fix": "저장 시 암호화하고, 쿠키에는 비밀을 두지 않거나 보호 플래그를 설계한다."
+    },
+    {
+      "id": "DES-2.8",
+      "name": "중요정보 전송",
+      "cwe": "",
+      "category": "보안기능",
+      "summary": "중요정보가 네트워크를 지날 때 암호화 채널을 쓰도록 설계한다.",
+      "agent_checks": [
+        "HTTP 평문으로 비밀이 오가는가?",
+        "TLS와 인증서 검증이 기본인가?"
+      ],
+      "fix": "전송 구간은 TLS 등 보호 채널을 기본으로 설계한다."
+    },
+    {
+      "id": "DES-3.1",
+      "name": "예외처리",
+      "cwe": "",
+      "category": "에러처리",
+      "summary": "예외를 어떻게 잡고, 사용자에게 무엇을 보여줄지, 무엇은 로그만 남길지 설계한다.",
+      "agent_checks": [
+        "스택이나 내부 경로가 응답에 나가는가?",
+        "빈 catch로 실패를 숨기는가?"
+      ],
+      "fix": "사용자는 일반 메시지만 보고, 상세는 서버 로그에 남기며 오류를 무시하지 않게 설계한다."
+    },
+    {
+      "id": "DES-4.1",
+      "name": "세션통제",
+      "cwe": "",
+      "category": "세션통제",
+      "summary": "세션 생성·고정·만료·공유를 통제해 다른 사용자 데이터가 섞이지 않게 설계한다.",
+      "agent_checks": [
+        "로그인 후 세션 ID를 재발급하는가?",
+        "세션이 사용자에 묶여 만료되는가?",
+        "쿠키 보호 플래그가 있는가?"
+      ],
+      "fix": "세션은 인증 사용자에 묶고, 재사용·공유·디스크 잔존을 막도록 설계한다."
+    }
+  ]
+}

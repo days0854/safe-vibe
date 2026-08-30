@@ -1,0 +1,352 @@
+[
+  {
+    "n": 1,
+    "id": "IMP-1.1",
+    "name": "SQL 삽입",
+    "article": "CWE-89",
+    "mistake": "string-interpolated SQL"
+  },
+  {
+    "n": 2,
+    "id": "IMP-1.2",
+    "name": "코드 삽입",
+    "article": "CWE-94, CWE-95",
+    "mistake": "dynamic eval of user input"
+  },
+  {
+    "n": 3,
+    "id": "IMP-1.3",
+    "name": "경로 조작 및 자원 삽입",
+    "article": "CWE-22, CWE-99",
+    "mistake": "path join with parent-directory user input"
+  },
+  {
+    "n": 4,
+    "id": "IMP-1.4",
+    "name": "크로스사이트 스크립트",
+    "article": "CWE-79",
+    "mistake": "innerHTML with user data"
+  },
+  {
+    "n": 5,
+    "id": "IMP-1.5",
+    "name": "운영체제 명령어 삽입",
+    "article": "CWE-78",
+    "mistake": "shell exec with user string"
+  },
+  {
+    "n": 6,
+    "id": "IMP-1.6",
+    "name": "위험한 형식 파일 업로드",
+    "article": "CWE-434",
+    "mistake": "upload trusted by original filename or extension"
+  },
+  {
+    "n": 7,
+    "id": "IMP-1.7",
+    "name": "신뢰되지 않는 URL 주소로 자동접속 연결",
+    "article": "CWE-601",
+    "mistake": "redirect to request-provided URL"
+  },
+  {
+    "n": 8,
+    "id": "IMP-1.8",
+    "name": "부적절한 XML 외부 개체 참조",
+    "article": "CWE-611",
+    "mistake": "XML parser with external entities enabled"
+  },
+  {
+    "n": 9,
+    "id": "IMP-1.9",
+    "name": "XML 삽입",
+    "article": "CWE-643",
+    "mistake": "string-built XPath"
+  },
+  {
+    "n": 10,
+    "id": "IMP-1.10",
+    "name": "LDAP 삽입",
+    "article": "CWE-90",
+    "mistake": "string-built LDAP filter"
+  },
+  {
+    "n": 11,
+    "id": "IMP-1.11",
+    "name": "크로스사이트 요청 위조",
+    "article": "CWE-352",
+    "mistake": "state-changing GET without CSRF token"
+  },
+  {
+    "n": 12,
+    "id": "IMP-1.12",
+    "name": "서버사이드 요청 위조",
+    "article": "CWE-918",
+    "mistake": "HTTP client call with user-controlled URL"
+  },
+  {
+    "n": 13,
+    "id": "IMP-1.13",
+    "name": "HTTP 응답분할",
+    "article": "CWE-113",
+    "mistake": "set_cookie / header value containing \\r or \\n"
+  },
+  {
+    "n": 14,
+    "id": "IMP-1.14",
+    "name": "정수형 오버플로우",
+    "article": "CWE-190",
+    "mistake": "int(request) used as size or count without bounds"
+  },
+  {
+    "n": 15,
+    "id": "IMP-1.15",
+    "name": "보안기능 결정에 사용되는 부적절한 입력값",
+    "article": "CWE-807",
+    "mistake": "hidden field or cookie decides admin role"
+  },
+  {
+    "n": 16,
+    "id": "IMP-1.16",
+    "name": "메모리 버퍼 오버플로우",
+    "article": "입력데이터 검증 및 표현",
+    "mistake": "복사 길이가 버퍼 크기보다 클 수 있는가"
+  },
+  {
+    "n": 17,
+    "id": "IMP-1.17",
+    "name": "포맷 스트링 삽입",
+    "article": "CWE-134",
+    "mistake": "logging or % with user-controlled format string"
+  },
+  {
+    "n": 18,
+    "id": "IMP-2.1",
+    "name": "적절한 인증 없는 중요 기능 허용",
+    "article": "CWE-306",
+    "mistake": "sensitive route with no auth middleware"
+  },
+  {
+    "n": 19,
+    "id": "IMP-2.2",
+    "name": "부적절한 인가",
+    "article": "CWE-285",
+    "mistake": "auth but no object-level authorization"
+  },
+  {
+    "n": 20,
+    "id": "IMP-2.3",
+    "name": "중요한 자원에 대한 잘못된 권한 설정",
+    "article": "CWE-732",
+    "mistake": "world-writable resource permissions"
+  },
+  {
+    "n": 21,
+    "id": "IMP-2.4",
+    "name": "취약한 암호화 알고리즘 사용",
+    "article": "CWE-327",
+    "mistake": "broken cipher for secrecy"
+  },
+  {
+    "n": 22,
+    "id": "IMP-2.5",
+    "name": "암호화되지 않은 중요정보",
+    "article": "CWE-312, CWE-319",
+    "mistake": "password or PII over cleartext HTTP"
+  },
+  {
+    "n": 23,
+    "id": "IMP-2.6",
+    "name": "하드코드된 중요정보",
+    "article": "CWE-259, CWE-321",
+    "mistake": "password or API key string literal"
+  },
+  {
+    "n": 24,
+    "id": "IMP-2.7",
+    "name": "충분하지 않은 키 길이 사용",
+    "article": "CWE-326",
+    "mistake": "asymmetric key shorter than current guidance"
+  },
+  {
+    "n": 25,
+    "id": "IMP-2.8",
+    "name": "적절하지 않은 난수 값 사용",
+    "article": "CWE-330",
+    "mistake": "non-crypto RNG used for tokens"
+  },
+  {
+    "n": 26,
+    "id": "IMP-2.9",
+    "name": "취약한 비밀번호 허용",
+    "article": "CWE-521",
+    "mistake": "no password complexity or length policy"
+  },
+  {
+    "n": 27,
+    "id": "IMP-2.10",
+    "name": "부적절한 전자서명 확인",
+    "article": "CWE-347",
+    "mistake": "skip signature verification"
+  },
+  {
+    "n": 28,
+    "id": "IMP-2.11",
+    "name": "부적절한 인증서 유효성 검증",
+    "article": "CWE-295",
+    "mistake": "TLS certificate verification disabled"
+  },
+  {
+    "n": 29,
+    "id": "IMP-2.12",
+    "name": "사용자 하드디스크에 저장되는 쿠키를 통한 정보노출",
+    "article": "CWE-539",
+    "mistake": "cookie without HttpOnly"
+  },
+  {
+    "n": 30,
+    "id": "IMP-2.13",
+    "name": "주석문 안에 포함된 시스템 주요정보",
+    "article": "CWE-615",
+    "mistake": "credentials written in source comments"
+  },
+  {
+    "n": 31,
+    "id": "IMP-2.14",
+    "name": "솔트 없이 일방향 해쉬 함수 사용",
+    "article": "CWE-759",
+    "mistake": "one-way hash of password with no salt"
+  },
+  {
+    "n": 32,
+    "id": "IMP-2.15",
+    "name": "무결성 검사 없는 코드 다운로드",
+    "article": "CWE-494",
+    "mistake": "download and run script without integrity check"
+  },
+  {
+    "n": 33,
+    "id": "IMP-2.16",
+    "name": "반복된 인증시도 제한 기능 부재",
+    "article": "CWE-307",
+    "mistake": "login with no lockout or rate limit"
+  },
+  {
+    "n": 34,
+    "id": "IMP-3.1",
+    "name": "경쟁조건: 검사 시점과 사용 시점(TOCTOU)",
+    "article": "CWE-367",
+    "mistake": "os.path.exists then open/unlink"
+  },
+  {
+    "n": 35,
+    "id": "IMP-3.2",
+    "name": "종료되지 않는 반복문 또는 재귀함수",
+    "article": "CWE-674, CWE-835",
+    "mistake": "loop without exit condition"
+  },
+  {
+    "n": 36,
+    "id": "IMP-4.1",
+    "name": "오류 메시지 정보노출",
+    "article": "CWE-209",
+    "mistake": "send exception stack to client"
+  },
+  {
+    "n": 37,
+    "id": "IMP-4.2",
+    "name": "오류상황 대응 부재",
+    "article": "CWE-390",
+    "mistake": "empty catch"
+  },
+  {
+    "n": 38,
+    "id": "IMP-4.3",
+    "name": "부적절한 예외 처리",
+    "article": "CWE-754",
+    "mistake": "catch that swallows the error"
+  },
+  {
+    "n": 39,
+    "id": "IMP-5.1",
+    "name": "Null Pointer 역참조",
+    "article": "CWE-476",
+    "mistake": "property access without null check"
+  },
+  {
+    "n": 40,
+    "id": "IMP-5.2",
+    "name": "부적절한 자원 해제",
+    "article": "CWE-404",
+    "mistake": "open handle or listener never closed"
+  },
+  {
+    "n": 41,
+    "id": "IMP-5.3",
+    "name": "해제된 자원 사용",
+    "article": "코드오류",
+    "mistake": "close/free 이후 같은 객체를 쓰는가"
+  },
+  {
+    "n": 42,
+    "id": "IMP-5.4",
+    "name": "초기화되지 않은 변수 사용",
+    "article": "코드오류",
+    "mistake": "초기화 없이 읽는 경로가 있는가"
+  },
+  {
+    "n": 43,
+    "id": "IMP-5.5",
+    "name": "신뢰할 수 없는 데이터의 역직렬화",
+    "article": "CWE-502",
+    "mistake": "untrusted payload deserialized as objects"
+  },
+  {
+    "n": 44,
+    "id": "IMP-6.1",
+    "name": "잘못된 세션에 의한 데이터 정보노출",
+    "article": "CWE-488, CWE-543",
+    "mistake": "session data leak across users"
+  },
+  {
+    "n": 45,
+    "id": "IMP-6.2",
+    "name": "제거되지 않고 남은 디버그 코드",
+    "article": "CWE-489",
+    "mistake": "debug log of secrets"
+  },
+  {
+    "n": 46,
+    "id": "IMP-6.3",
+    "name": "Public 메서드부터 반환된 Private 배열",
+    "article": "CWE-495",
+    "mistake": "return internal array reference from a public method"
+  },
+  {
+    "n": 47,
+    "id": "IMP-6.4",
+    "name": "Private 배열에 Public 데이터 할당",
+    "article": "CWE-496",
+    "mistake": "assign public input onto a private array"
+  },
+  {
+    "n": 48,
+    "id": "IMP-7.1",
+    "name": "DNS lookup에 의존한 보안결정",
+    "article": "CWE-350",
+    "mistake": "security decision from reverse DNS"
+  },
+  {
+    "n": 49,
+    "id": "IMP-7.2",
+    "name": "취약한 API 사용",
+    "article": "API 오용",
+    "mistake": "known-vulnerable package API"
+  },
+  {
+    "n": 50,
+    "id": "DES-1.1",
+    "name": "DBMS 조회 및 결과 검증",
+    "article": "설계/입력데이터 검증 및 표현",
+    "mistake": "질의는 미리 준비된 문장+바인딩으로 설계했는가"
+  }
+]
