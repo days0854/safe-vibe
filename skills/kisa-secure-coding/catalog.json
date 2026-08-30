@@ -1083,704 +1083,704 @@
   "case_count": 100,
   "cases": [
     {
-      "id": "IMP-1.1",
-      "name": "SQL 삽입",
+      "n": 1,
+      "id": "KISA-1",
+      "name": "SQL 삽입 — 문자열 이어붙이기",
       "article": "CWE-89",
-      "mistake": "string-interpolated SQL",
-      "n": 1
+      "mistake": "요청값을 문자열로 붙여 SQL을 만듦"
     },
     {
-      "id": "IMP-1.2",
-      "name": "코드 삽입",
+      "n": 2,
+      "id": "KISA-2",
+      "name": "SQL 삽입 — ORM raw()",
+      "article": "CWE-89",
+      "mistake": "ORM raw 쿼리에 사용자 입력을 그대로 넣음"
+    },
+    {
+      "n": 3,
+      "id": "KISA-3",
+      "name": "SQL 삽입 — MyBatis ${}",
+      "article": "CWE-89",
+      "mistake": "매퍼에서 ${}로 요청 파라미터를 붙여 질의를 만듦"
+    },
+    {
+      "n": 4,
+      "id": "KISA-4",
+      "name": "코드 삽입 — JS eval",
       "article": "CWE-94, CWE-95",
-      "mistake": "dynamic eval of user input",
-      "n": 2
+      "mistake": "브라우저에서 요청 문자열을 eval로 실행함"
     },
     {
-      "id": "IMP-1.3",
-      "name": "경로 조작 및 자원 삽입",
+      "n": 5,
+      "id": "KISA-5",
+      "name": "코드 삽입 — Python exec",
+      "article": "CWE-94, CWE-95",
+      "mistake": "서버에서 사용자 입력을 exec로 돌림"
+    },
+    {
+      "n": 6,
+      "id": "KISA-6",
+      "name": "경로 조작 — 상위 디렉터리",
       "article": "CWE-22, CWE-99",
-      "mistake": "path join with parent-directory user input",
-      "n": 3
+      "mistake": "파일 경로에 ../가 든 요청값을 그대로 이어붙임"
     },
     {
-      "id": "IMP-1.4",
-      "name": "크로스사이트 스크립트",
+      "n": 7,
+      "id": "KISA-7",
+      "name": "경로 조작 — 업로드 저장명",
+      "article": "CWE-22, CWE-99",
+      "mistake": "업로드 저장 경로를 클라이언트가 준 파일명으로 만듦"
+    },
+    {
+      "n": 8,
+      "id": "KISA-8",
+      "name": "XSS — innerHTML",
       "article": "CWE-79",
-      "mistake": "innerHTML with user data",
-      "n": 4
+      "mistake": "사용자 HTML을 innerHTML에 그대로 넣음"
     },
     {
-      "id": "IMP-1.5",
-      "name": "운영체제 명령어 삽입",
+      "n": 9,
+      "id": "KISA-9",
+      "name": "XSS — 템플릿 mark_safe",
+      "article": "CWE-79",
+      "mistake": "템플릿에서 사용자 문자열을 이스케이프 없이 출력함"
+    },
+    {
+      "n": 10,
+      "id": "KISA-10",
+      "name": "XSS — 태그 속성",
+      "article": "CWE-79",
+      "mistake": "태그 속성에 따옴표 검사 없이 요청값을 넣음"
+    },
+    {
+      "n": 11,
+      "id": "KISA-11",
+      "name": "OS 명령어 삽입 — os.system",
       "article": "CWE-78",
-      "mistake": "shell exec with user string",
-      "n": 5
+      "mistake": "셸 명령 문자열에 요청값을 이어붙임"
     },
     {
-      "id": "IMP-1.6",
-      "name": "위험한 형식 파일 업로드",
+      "n": 12,
+      "id": "KISA-12",
+      "name": "OS 명령어 삽입 — 셸 파이프",
+      "article": "CWE-78",
+      "mistake": "사용자 인자를 셸 파이프가 열리는 한 줄로 넘김"
+    },
+    {
+      "n": 13,
+      "id": "KISA-13",
+      "name": "위험한 파일 업로드 — 확장자만 검사",
       "article": "CWE-434",
-      "mistake": "upload trusted by original filename or extension",
-      "n": 6
+      "mistake": "확장자 문자열만 보고 실행 가능한 파일을 받음"
     },
     {
-      "id": "IMP-1.7",
-      "name": "신뢰되지 않는 URL 주소로 자동접속 연결",
+      "n": 14,
+      "id": "KISA-14",
+      "name": "위험한 파일 업로드 — 원본명으로 저장",
+      "article": "CWE-434",
+      "mistake": "원본 파일명 그대로 웹 루트에 저장함"
+    },
+    {
+      "n": 15,
+      "id": "KISA-15",
+      "name": "오픈리다이렉트 — next 파라미터",
       "article": "CWE-601",
-      "mistake": "redirect to request-provided URL",
-      "n": 7
+      "mistake": "리다이렉트 주소를 요청 파라미터에서 그대로 씀"
     },
     {
-      "id": "IMP-1.8",
-      "name": "부적절한 XML 외부 개체 참조",
+      "n": 16,
+      "id": "KISA-16",
+      "name": "오픈리다이렉트 — Location 헤더",
+      "article": "CWE-601",
+      "mistake": "Location에 외부 URL을 허용 목록 없이 넣음"
+    },
+    {
+      "n": 17,
+      "id": "KISA-17",
+      "name": "XXE — 외부 엔티티 허용",
       "article": "CWE-611",
-      "mistake": "XML parser with external entities enabled",
-      "n": 8
+      "mistake": "XML 파서에서 외부 엔티티를 켠 채로 파싱함"
     },
     {
-      "id": "IMP-1.9",
-      "name": "XML 삽입",
+      "n": 18,
+      "id": "KISA-18",
+      "name": "XXE — DTD 미차단",
+      "article": "CWE-611",
+      "mistake": "DTD를 막지 않은 파서로 업로드 XML을 읽음"
+    },
+    {
+      "n": 19,
+      "id": "KISA-19",
+      "name": "XML 삽입 — XPath 이어붙이기",
       "article": "CWE-643",
-      "mistake": "string-built XPath",
-      "n": 9
+      "mistake": "XPath 질의에 검색어를 문자열로 붙임"
     },
     {
-      "id": "IMP-1.10",
-      "name": "LDAP 삽입",
+      "n": 20,
+      "id": "KISA-20",
+      "name": "LDAP 삽입 — 필터 이어붙이기",
       "article": "CWE-90",
-      "mistake": "string-built LDAP filter",
-      "n": 10
+      "mistake": "LDAP 필터에 로그인 아이디를 그대로 붙임"
     },
     {
-      "id": "IMP-1.11",
-      "name": "크로스사이트 요청 위조",
+      "n": 21,
+      "id": "KISA-21",
+      "name": "CSRF — 상태변경 GET",
       "article": "CWE-352",
-      "mistake": "state-changing GET without CSRF token",
-      "n": 11
+      "mistake": "상태 변경을 GET으로 받고 토큰을 확인하지 않음"
     },
     {
-      "id": "IMP-1.12",
-      "name": "서버사이드 요청 위조",
+      "n": 22,
+      "id": "KISA-22",
+      "name": "CSRF — 토큰 미검증",
+      "article": "CWE-352",
+      "mistake": "폼 POST에서 CSRF 토큰을 검증하지 않음"
+    },
+    {
+      "n": 23,
+      "id": "KISA-23",
+      "name": "SSRF — 사용자 URL 호출",
       "article": "CWE-918",
-      "mistake": "HTTP client call with user-controlled URL",
-      "n": 12
+      "mistake": "서버 HTTP 클라이언트가 요청 URL을 그대로 호출함"
     },
     {
-      "id": "IMP-1.13",
-      "name": "HTTP 응답분할",
+      "n": 24,
+      "id": "KISA-24",
+      "name": "SSRF — 내부망 스킴",
+      "article": "CWE-918",
+      "mistake": "file이나 내부 IP 스킴을 걸러내지 않고 가져옴"
+    },
+    {
+      "n": 25,
+      "id": "KISA-25",
+      "name": "HTTP 응답분할 — Set-Cookie",
       "article": "CWE-113",
-      "mistake": "set_cookie / header value containing \\r or \\n",
-      "n": 13
+      "mistake": "쿠키 값에 개행이 있어도 헤더에 그대로 넣음"
     },
     {
-      "id": "IMP-1.14",
-      "name": "정수형 오버플로우",
+      "n": 26,
+      "id": "KISA-26",
+      "name": "HTTP 응답분할 — Location",
+      "article": "CWE-113",
+      "mistake": "리다이렉트 헤더에 CR LF가 든 값을 씀"
+    },
+    {
+      "n": 27,
+      "id": "KISA-27",
+      "name": "정수 오버플로우 — 버퍼 크기",
       "article": "CWE-190",
-      "mistake": "int(request) used as size or count without bounds",
-      "n": 14
+      "mistake": "요청 정수를 검사 없이 버퍼 크기로 씀"
     },
     {
-      "id": "IMP-1.15",
-      "name": "보안기능 결정에 사용되는 부적절한 입력값",
+      "n": 28,
+      "id": "KISA-28",
+      "name": "정수 오버플로우 — 수량 합산",
+      "article": "CWE-190",
+      "mistake": "수량 합이 넘쳐도 그대로 결제 금액에 씀"
+    },
+    {
+      "n": 29,
+      "id": "KISA-29",
+      "name": "보안기능 결정 입력 — hidden 필드",
       "article": "CWE-807",
-      "mistake": "hidden field or cookie decides admin role",
-      "n": 15
+      "mistake": "hidden 필드의 역할 값으로 관리자 여부를 정함"
     },
     {
-      "id": "IMP-1.16",
+      "n": 30,
+      "id": "KISA-30",
+      "name": "보안기능 결정 입력 — 쿠키 역할",
+      "article": "CWE-807",
+      "mistake": "쿠키에 담긴 권한 문자열을 그대로 믿음"
+    },
+    {
+      "n": 31,
+      "id": "KISA-31",
       "name": "메모리 버퍼 오버플로우",
-      "article": "구현 1",
-      "mistake": "복사 길이가 버퍼 크기보다 클 수 있는가",
-      "n": 16
+      "article": "IMP-1.16",
+      "mistake": "복사 길이를 버퍼 크기와 비교하지 않고 memcpy함"
     },
     {
-      "id": "IMP-1.17",
-      "name": "포맷 스트링 삽입",
+      "n": 32,
+      "id": "KISA-32",
+      "name": "포맷 스트링 — 사용자 포맷",
       "article": "CWE-134",
-      "mistake": "logging or % with user-controlled format string",
-      "n": 17
+      "mistake": "로그 포맷 문자열에 요청값을 그대로 넣음"
     },
     {
-      "id": "IMP-2.1",
-      "name": "적절한 인증 없는 중요 기능 허용",
+      "n": 33,
+      "id": "KISA-33",
+      "name": "인증 없는 중요기능 — 미들웨어 누락",
       "article": "CWE-306",
-      "mistake": "sensitive route with no auth middleware",
-      "n": 18
+      "mistake": "민감 API에 인증 미들웨어를 달지 않음"
     },
     {
-      "id": "IMP-2.2",
-      "name": "부적절한 인가",
+      "n": 34,
+      "id": "KISA-34",
+      "name": "인증 없는 중요기능 — 내부 API",
+      "article": "CWE-306",
+      "mistake": "내부용 삭제 API를 인증 없이 열어 둠"
+    },
+    {
+      "n": 35,
+      "id": "KISA-35",
+      "name": "부적절한 인가 — 객체 ID",
       "article": "CWE-285",
-      "mistake": "auth but no object-level authorization",
-      "n": 19
+      "mistake": "로그인만 확인하고 남의 자원 ID를 그대로 조회함"
     },
     {
-      "id": "IMP-2.3",
-      "name": "중요한 자원에 대한 잘못된 권한 설정",
+      "n": 36,
+      "id": "KISA-36",
+      "name": "부적절한 인가 — 역할만 확인",
+      "article": "CWE-285",
+      "mistake": "역할만 보고 해당 레코드 소유자를 확인하지 않음"
+    },
+    {
+      "n": 37,
+      "id": "KISA-37",
+      "name": "잘못된 권한 설정 — 디렉터리 777",
       "article": "CWE-732",
-      "mistake": "world-writable resource permissions",
-      "n": 20
+      "mistake": "업로드 디렉터리를 누구나 쓰게 권한을 줌"
     },
     {
-      "id": "IMP-2.4",
-      "name": "취약한 암호화 알고리즘 사용",
+      "n": 38,
+      "id": "KISA-38",
+      "name": "잘못된 권한 설정 — 설정파일 권한",
+      "article": "CWE-732",
+      "mistake": "비밀이 든 설정 파일을 누구나 읽게 남김"
+    },
+    {
+      "n": 39,
+      "id": "KISA-39",
+      "name": "취약한 암호 알고리즘 — MD5",
       "article": "CWE-327",
-      "mistake": "broken cipher for secrecy",
-      "n": 21
+      "mistake": "비밀번호 저장에 MD5를 씀"
     },
     {
-      "id": "IMP-2.5",
-      "name": "암호화되지 않은 중요정보",
+      "n": 40,
+      "id": "KISA-40",
+      "name": "취약한 암호 알고리즘 — DES·ECB",
+      "article": "CWE-327",
+      "mistake": "기밀 데이터에 DES나 ECB를 씀"
+    },
+    {
+      "n": 41,
+      "id": "KISA-41",
+      "name": "암호화되지 않은 중요정보 — 평문 HTTP",
       "article": "CWE-312, CWE-319",
-      "mistake": "password or PII over cleartext HTTP",
-      "n": 22
+      "mistake": "비밀번호를 HTTP 평문으로 전송함"
     },
     {
-      "id": "IMP-2.6",
-      "name": "하드코드된 중요정보",
+      "n": 42,
+      "id": "KISA-42",
+      "name": "암호화되지 않은 중요정보 — 평문 파일",
+      "article": "CWE-312, CWE-319",
+      "mistake": "주민번호나 토큰을 평문 파일에 저장함"
+    },
+    {
+      "n": 43,
+      "id": "KISA-43",
+      "name": "하드코드된 중요정보 — DB 비밀번호",
       "article": "CWE-259, CWE-321",
-      "mistake": "password or API key string literal",
-      "n": 23
+      "mistake": "소스에 DB 비밀번호 문자열을 박아 둠"
     },
     {
-      "id": "IMP-2.7",
-      "name": "충분하지 않은 키 길이 사용",
+      "n": 44,
+      "id": "KISA-44",
+      "name": "하드코드된 중요정보 — API 키",
+      "article": "CWE-259, CWE-321",
+      "mistake": "클라이언트 JS에 API 키를 상수로 넣음"
+    },
+    {
+      "n": 45,
+      "id": "KISA-45",
+      "name": "짧은 키 — RSA 1024",
       "article": "CWE-326",
-      "mistake": "asymmetric key shorter than current guidance",
-      "n": 24
+      "mistake": "RSA 키를 1024비트로 생성함"
     },
     {
-      "id": "IMP-2.8",
-      "name": "적절하지 않은 난수 값 사용",
+      "n": 46,
+      "id": "KISA-46",
+      "name": "약한 난수 — Math.random",
       "article": "CWE-330",
-      "mistake": "non-crypto RNG used for tokens",
-      "n": 25
+      "mistake": "세션 토큰을 Math.random으로 만듦"
     },
     {
-      "id": "IMP-2.9",
-      "name": "취약한 비밀번호 허용",
+      "n": 47,
+      "id": "KISA-47",
+      "name": "약한 난수 — random.random",
+      "article": "CWE-330",
+      "mistake": "인증 코드를 Python random으로 만듦"
+    },
+    {
+      "n": 48,
+      "id": "KISA-48",
+      "name": "취약한 비밀번호 — 정책 없음",
       "article": "CWE-521",
-      "mistake": "no password complexity or length policy",
-      "n": 26
+      "mistake": "비밀번호 길이와 복잡도를 검사하지 않음"
     },
     {
-      "id": "IMP-2.10",
-      "name": "부적절한 전자서명 확인",
+      "n": 49,
+      "id": "KISA-49",
+      "name": "전자서명 미확인 — JWT decode",
       "article": "CWE-347",
-      "mistake": "skip signature verification",
-      "n": 27
+      "mistake": "JWT를 검증 없이 decode만 하고 클레임을 믿음"
     },
     {
-      "id": "IMP-2.11",
-      "name": "부적절한 인증서 유효성 검증",
+      "n": 50,
+      "id": "KISA-50",
+      "name": "전자서명 미확인 — 웹훅 서명",
+      "article": "CWE-347",
+      "mistake": "웹훅 본문 서명을 확인하지 않음"
+    },
+    {
+      "n": 51,
+      "id": "KISA-51",
+      "name": "인증서 검증 우회 — verify=False",
       "article": "CWE-295",
-      "mistake": "TLS certificate verification disabled",
-      "n": 28
+      "mistake": "TLS 호출에서 verify=False를 켬"
     },
     {
-      "id": "IMP-2.12",
-      "name": "사용자 하드디스크에 저장되는 쿠키를 통한 정보노출",
+      "n": 52,
+      "id": "KISA-52",
+      "name": "인증서 검증 우회 — 호스트명 생략",
+      "article": "CWE-295",
+      "mistake": "인증서 호스트명 검사를 꺼 둠"
+    },
+    {
+      "n": 53,
+      "id": "KISA-53",
+      "name": "쿠키 정보노출 — HttpOnly 누락",
       "article": "CWE-539",
-      "mistake": "cookie without HttpOnly",
-      "n": 29
+      "mistake": "세션 쿠키에 HttpOnly를 붙이지 않음"
     },
     {
-      "id": "IMP-2.13",
-      "name": "주석문 안에 포함된 시스템 주요정보",
+      "n": 54,
+      "id": "KISA-54",
+      "name": "쿠키 정보노출 — Secure 누락",
+      "article": "CWE-539",
+      "mistake": "인증 쿠키에 Secure 없이 내려줌"
+    },
+    {
+      "n": 55,
+      "id": "KISA-55",
+      "name": "주석 속 비밀",
       "article": "CWE-615",
-      "mistake": "credentials written in source comments",
-      "n": 30
+      "mistake": "소스 주석에 운영 계정과 비밀번호를 적어 둠"
     },
     {
-      "id": "IMP-2.14",
-      "name": "솔트 없이 일방향 해쉬 함수 사용",
+      "n": 56,
+      "id": "KISA-56",
+      "name": "솔트 없는 해시 — 비밀번호",
       "article": "CWE-759",
-      "mistake": "one-way hash of password with no salt",
-      "n": 31
+      "mistake": "비밀번호를 솔트 없이 해시만 저장함"
     },
     {
-      "id": "IMP-2.15",
-      "name": "무결성 검사 없는 코드 다운로드",
+      "n": 57,
+      "id": "KISA-57",
+      "name": "솔트 없는 해시 — 고정 솔트",
+      "article": "CWE-759",
+      "mistake": "모든 사용자에게 같은 고정 솔트를 씀"
+    },
+    {
+      "n": 58,
+      "id": "KISA-58",
+      "name": "무결성 없는 코드 다운로드",
       "article": "CWE-494",
-      "mistake": "download and run script without integrity check",
-      "n": 32
+      "mistake": "원격 스크립트를 해시 확인 없이 받아 실행함"
     },
     {
-      "id": "IMP-2.16",
-      "name": "반복된 인증시도 제한 기능 부재",
+      "n": 59,
+      "id": "KISA-59",
+      "name": "인증시도 제한 부재",
       "article": "CWE-307",
-      "mistake": "login with no lockout or rate limit",
-      "n": 33
+      "mistake": "로그인 실패 횟수를 제한하지 않음"
     },
     {
-      "id": "IMP-3.1",
-      "name": "경쟁조건: 검사 시점과 사용 시점(TOCTOU)",
+      "n": 60,
+      "id": "KISA-60",
+      "name": "TOCTOU — 존재 확인 후 열기",
       "article": "CWE-367",
-      "mistake": "os.path.exists then open/unlink",
-      "n": 34
+      "mistake": "파일 존재 확인과 열기 사이에 경로가 바뀌어도 그대로 염"
     },
     {
-      "id": "IMP-3.2",
-      "name": "종료되지 않는 반복문 또는 재귀함수",
+      "n": 61,
+      "id": "KISA-61",
+      "name": "무한루프·재귀 — 종료 조건 없음",
       "article": "CWE-674, CWE-835",
-      "mistake": "loop without exit condition",
-      "n": 35
+      "mistake": "요청 깊이만큼 재귀하면서 종료 조건을 두지 않음"
     },
     {
-      "id": "IMP-4.1",
-      "name": "오류 메시지 정보노출",
+      "n": 62,
+      "id": "KISA-62",
+      "name": "오류 메시지 정보노출 — 스택",
       "article": "CWE-209",
-      "mistake": "send exception stack to client",
-      "n": 36
+      "mistake": "예외 스택을 응답 본문에 그대로 내려줌"
     },
     {
-      "id": "IMP-4.2",
-      "name": "오류상황 대응 부재",
+      "n": 63,
+      "id": "KISA-63",
+      "name": "오류 메시지 정보노출 — SQL 에러",
+      "article": "CWE-209",
+      "mistake": "DB 오류 문구를 사용자에게 그대로 보여 줌"
+    },
+    {
+      "n": 64,
+      "id": "KISA-64",
+      "name": "오류대응 부재 — 빈 catch",
       "article": "CWE-390",
-      "mistake": "empty catch",
-      "n": 37
+      "mistake": "catch 블록을 비워 두고 실패를 무시함"
     },
     {
-      "id": "IMP-4.3",
-      "name": "부적절한 예외 처리",
+      "n": 65,
+      "id": "KISA-65",
+      "name": "부적절한 예외처리 — 광역 catch",
       "article": "CWE-754",
-      "mistake": "catch that swallows the error",
-      "n": 38
+      "mistake": "Exception을 잡고 성공처럼 다음으로 넘어감"
     },
     {
-      "id": "IMP-5.1",
-      "name": "Null Pointer 역참조",
+      "n": 66,
+      "id": "KISA-66",
+      "name": "Null 역참조",
       "article": "CWE-476",
-      "mistake": "property access without null check",
-      "n": 39
+      "mistake": "조회 결과가 null인데 필드에 바로 접근함"
     },
     {
-      "id": "IMP-5.2",
-      "name": "부적절한 자원 해제",
+      "n": 67,
+      "id": "KISA-67",
+      "name": "자원 미해제",
       "article": "CWE-404",
-      "mistake": "open handle or listener never closed",
-      "n": 40
+      "mistake": "연 소켓이나 파일을 예외 경로에서 닫지 않음"
     },
     {
-      "id": "IMP-5.3",
+      "n": 68,
+      "id": "KISA-68",
       "name": "해제된 자원 사용",
-      "article": "구현 5",
-      "mistake": "close/free 이후 같은 객체를 쓰는가",
-      "n": 41
+      "article": "IMP-5.3",
+      "mistake": "close한 뒤 같은 핸들로 다시 읽음"
     },
     {
-      "id": "IMP-5.4",
-      "name": "초기화되지 않은 변수 사용",
-      "article": "구현 5",
-      "mistake": "초기화 없이 읽는 경로가 있는가",
-      "n": 42
+      "n": 69,
+      "id": "KISA-69",
+      "name": "미초기화 변수",
+      "article": "IMP-5.4",
+      "mistake": "지역 변수를 초기화 없이 조건 분기에서 읽음"
     },
     {
-      "id": "IMP-5.5",
-      "name": "신뢰할 수 없는 데이터의 역직렬화",
+      "n": 70,
+      "id": "KISA-70",
+      "name": "신뢰불가 역직렬화 — pickle.loads",
       "article": "CWE-502",
-      "mistake": "untrusted payload deserialized as objects",
-      "n": 43
+      "mistake": "요청 바이트를 pickle.loads로 객체화함"
     },
     {
-      "id": "IMP-6.1",
-      "name": "잘못된 세션에 의한 데이터 정보노출",
+      "n": 71,
+      "id": "KISA-71",
+      "name": "신뢰불가 역직렬화 — yaml.load",
+      "article": "CWE-502",
+      "mistake": "yaml.load에 사용자 YAML을 그대로 넘김"
+    },
+    {
+      "n": 72,
+      "id": "KISA-72",
+      "name": "신뢰불가 역직렬화 — ObjectInputStream",
+      "article": "CWE-502",
+      "mistake": "업로드 스트림을 ObjectInputStream으로 읽음"
+    },
+    {
+      "n": 73,
+      "id": "KISA-73",
+      "name": "잘못된 세션 데이터노출",
       "article": "CWE-488, CWE-543",
-      "mistake": "session data leak across users",
-      "n": 44
+      "mistake": "싱글톤에 사용자 데이터를 넣어 다음 요청에 섞임"
     },
     {
-      "id": "IMP-6.2",
-      "name": "제거되지 않고 남은 디버그 코드",
+      "n": 74,
+      "id": "KISA-74",
+      "name": "남은 디버그 코드 — 비밀 로그",
       "article": "CWE-489",
-      "mistake": "debug log of secrets",
-      "n": 45
+      "mistake": "디버그 로그에 토큰과 비밀번호를 찍음"
     },
     {
-      "id": "IMP-6.3",
-      "name": "Public 메서드부터 반환된 Private 배열",
+      "n": 75,
+      "id": "KISA-75",
+      "name": "남은 디버그 코드 — 디버그 엔드포인트",
+      "article": "CWE-489",
+      "mistake": "운영에 디버그 엔드포인트와 스위치를 남김"
+    },
+    {
+      "n": 76,
+      "id": "KISA-76",
+      "name": "Public이 Private 배열 반환",
       "article": "CWE-495",
-      "mistake": "return internal array reference from a public method",
-      "n": 46
+      "mistake": "public 메서드가 내부 배열 참조를 그대로 반환함"
     },
     {
-      "id": "IMP-6.4",
-      "name": "Private 배열에 Public 데이터 할당",
+      "n": 77,
+      "id": "KISA-77",
+      "name": "Private에 Public 배열 할당",
       "article": "CWE-496",
-      "mistake": "assign public input onto a private array",
-      "n": 47
+      "mistake": "외부에서 받은 배열을 private 필드에 참조로 넣음"
     },
     {
-      "id": "IMP-7.1",
-      "name": "DNS lookup에 의존한 보안결정",
+      "n": 78,
+      "id": "KISA-78",
+      "name": "DNS 의존 보안결정",
       "article": "CWE-350",
-      "mistake": "security decision from reverse DNS",
-      "n": 48
+      "mistake": "역방향 DNS 이름으로 ACL을 결정함"
     },
     {
-      "id": "IMP-7.2",
+      "n": 79,
+      "id": "KISA-79",
       "name": "취약한 API 사용",
-      "article": "구현 7",
-      "mistake": "known-vulnerable package API",
-      "n": 49
+      "article": "IMP-7.2",
+      "mistake": "폐기된 암호 API나 알려진 취약 함수를 호출함"
     },
     {
-      "id": "DES-1.1",
-      "name": "DBMS 조회 및 결과 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "질의는 미리 준비된 문장+바인딩으로 설계했는가?",
-      "n": 50
+      "n": 80,
+      "id": "KISA-80",
+      "name": "DBMS 조회 결과 검증",
+      "article": "DES-1.1",
+      "mistake": "질의 결과 행이 기대한 건지 확인하지 않음"
     },
     {
-      "id": "DES-1.2",
-      "name": "XML 조회 및 결과 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "XPath/XQuery에 입력을 문자열로 붙이지 않는가?",
-      "n": 51
+      "n": 81,
+      "id": "KISA-81",
+      "name": "XML 조회 결과 검증",
+      "article": "DES-1.2",
+      "mistake": "XML 조회 결과가 허용 스키마인지 검사하지 않음"
     },
     {
-      "id": "DES-1.3",
-      "name": "디렉토리 서비스 조회 및 결과 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "필터 조립에 사용자 원문이 들어가는가?",
-      "n": 52
+      "n": 82,
+      "id": "KISA-82",
+      "name": "디렉터리 서비스 조회 검증",
+      "article": "DES-1.3",
+      "mistake": "LDAP 조회 결과가 한 건인지 확인하지 않음"
     },
     {
-      "id": "DES-1.4",
-      "name": "시스템 자원 접근 및 명령어 수행 입력값 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "실행 파일·경로는 화이트리스트인가?",
-      "n": 53
+      "n": 83,
+      "id": "KISA-83",
+      "name": "시스템 명령 입력값 검증",
+      "article": "DES-1.4",
+      "mistake": "허용 명령 목록 없이 사용자 인자를 시스템 호출에 넘김"
     },
     {
-      "id": "DES-1.5",
-      "name": "웹 서비스 요청 및 결과 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "출력 인코딩이 기본으로 켜지는가?",
-      "n": 54
+      "n": 84,
+      "id": "KISA-84",
+      "name": "웹 서비스 요청 결과 검증",
+      "article": "DES-1.5",
+      "mistake": "외부 API 응답 필드를 검증 없이 내부 권한에 씀"
     },
     {
-      "id": "DES-1.6",
-      "name": "웹 기반 중요 기능 수행 요청 유효성 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "CSRF 토큰 또는 동등한 보호가 있는가?",
-      "n": 55
+      "n": 85,
+      "id": "KISA-85",
+      "name": "중요기능 요청 유효성",
+      "article": "DES-1.6",
+      "mistake": "이체·삭제 요청의 재전송과 파라미터 변조를 막지 않음"
     },
     {
-      "id": "DES-1.7",
-      "name": "HTTP 프로토콜 유효성 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "헤더 값에서 개행을 제거하는가?",
-      "n": 56
+      "n": 86,
+      "id": "KISA-86",
+      "name": "HTTP 프로토콜 유효성 — Host",
+      "article": "DES-1.7",
+      "mistake": "Host 헤더를 검증하지 않고 절대 URL을 만듦"
     },
     {
-      "id": "DES-1.8",
-      "name": "허용된 범위내 메모리 접근",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "복사 길이 한도가 명시되어 있는가?",
-      "n": 57
+      "n": 87,
+      "id": "KISA-87",
+      "name": "메모리 범위 밖 접근",
+      "article": "DES-1.8",
+      "mistake": "사용자 인덱스로 배열에 접근할 때 경계를 보지 않음"
     },
     {
-      "id": "DES-1.9",
+      "n": 88,
+      "id": "KISA-88",
       "name": "보안기능 입력값 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "역할이 쿠키·히든필드에 실리는가?",
-      "n": 58
+      "article": "DES-1.9",
+      "mistake": "암호 모드 같은 보안 옵션을 요청 파라미터로 받음"
     },
     {
-      "id": "DES-1.10",
+      "n": 89,
+      "id": "KISA-89",
       "name": "업로드·다운로드 파일 검증",
-      "article": "설계 입력데이터 검증 및 표현",
-      "mistake": "확장자·MIME 허용 목록이 있는가?",
-      "n": 59
+      "article": "DES-1.10",
+      "mistake": "다운로드 경로와 콘텐츠 타입을 서버에서 고정하지 않음"
     },
     {
-      "id": "DES-2.1",
-      "name": "인증 대상 및 방식",
-      "article": "설계 보안기능",
-      "mistake": "중요 기능이 인증 없이 열리는가?",
-      "n": 60
+      "n": 90,
+      "id": "KISA-90",
+      "name": "인증 후 세션 고정",
+      "article": "DES-2.1",
+      "mistake": "로그인 후에도 세션 ID를 바꾸지 않음"
     },
     {
-      "id": "DES-2.2",
-      "name": "인증 수행 제한",
-      "article": "설계 보안기능",
-      "mistake": "실패 횟수 한도와 잠금이 있는가?",
-      "n": 61
+      "n": 91,
+      "id": "KISA-91",
+      "name": "인증 우회 파라미터",
+      "article": "DES-2.2",
+      "mistake": "debug=1 같은 파라미터로 인증을 건너뛰게 함"
     },
     {
-      "id": "DES-2.3",
-      "name": "비밀번호 관리",
-      "article": "설계 보안기능",
-      "mistake": "길이·조합 규칙이 있는가?",
-      "n": 62
+      "n": 92,
+      "id": "KISA-92",
+      "name": "비밀번호 평문 비교",
+      "article": "DES-2.3",
+      "mistake": "비밀번호를 해시하지 않고 평문으로 비교함"
     },
     {
-      "id": "DES-2.4",
-      "name": "중요자원 접근통제",
-      "article": "설계 보안기능",
-      "mistake": "로그인만으로 모든 객체에 접근하는가?",
-      "n": 63
+      "n": 93,
+      "id": "KISA-93",
+      "name": "중요자원 직접 URL",
+      "article": "DES-2.4",
+      "mistake": "정적 경로만 알면 민감 파일을 내려받게 함"
     },
     {
-      "id": "DES-2.5",
-      "name": "암호키 관리",
-      "article": "설계 보안기능",
-      "mistake": "키가 소스나 주석에 있는가?",
-      "n": 64
+      "n": 94,
+      "id": "KISA-94",
+      "name": "암호키 소스 상수",
+      "article": "DES-2.5",
+      "mistake": "대칭키를 소스 상수로 넣고 순환하지 않음"
     },
     {
-      "id": "DES-2.6",
-      "name": "암호연산",
-      "article": "설계 보안기능",
-      "mistake": "취약 알고리즘이나 짧은 키를 허용하는가?",
-      "n": 65
+      "n": 95,
+      "id": "KISA-95",
+      "name": "암호연산 IV 재사용",
+      "article": "DES-2.6",
+      "mistake": "같은 IV를 매 메시지에 재사용함"
     },
     {
-      "id": "DES-2.7",
-      "name": "중요정보 저장",
-      "article": "설계 보안기능",
-      "mistake": "평문 저장이 남아 있는가?",
-      "n": 66
+      "n": 96,
+      "id": "KISA-96",
+      "name": "중요정보 평문 로그",
+      "article": "DES-2.7",
+      "mistake": "카드번호와 주민번호를 로그 파일에 평문으로 남김"
     },
     {
-      "id": "DES-2.8",
-      "name": "중요정보 전송",
-      "article": "설계 보안기능",
-      "mistake": "HTTP 평문으로 비밀이 오가는가?",
-      "n": 67
+      "n": 97,
+      "id": "KISA-97",
+      "name": "내부망 평문 전송",
+      "article": "DES-2.8",
+      "mistake": "내부 서비스 간에도 토큰을 평문 HTTP로 넘김"
     },
     {
-      "id": "DES-3.1",
-      "name": "예외처리",
-      "article": "설계 에러처리",
-      "mistake": "스택이나 내부 경로가 응답에 나가는가?",
-      "n": 68
+      "n": 98,
+      "id": "KISA-98",
+      "name": "예외 시 기본 허용",
+      "article": "DES-3.1",
+      "mistake": "실패 시 기본 허용으로 떨어지는 분기를 둠"
     },
     {
-      "id": "DES-4.1",
-      "name": "세션통제",
-      "article": "설계 세션통제",
-      "mistake": "로그인 후 세션 ID를 재발급하는가?",
-      "n": 69
+      "n": 99,
+      "id": "KISA-99",
+      "name": "세션 유휴 만료 없음",
+      "article": "DES-4.1",
+      "mistake": "유휴 세션을 만료시키지 않음"
     },
     {
-      "id": "IMP-1.1-c2",
-      "name": "SQL 삽입",
-      "article": "CWE-89",
-      "mistake": "Django ORM / SQLAlchemy / execute(sql, params) 바인딩을 쓰는가?",
-      "n": 70
-    },
-    {
-      "id": "IMP-1.1-c3",
-      "name": "SQL 삽입",
-      "article": "CWE-89",
-      "mistake": "raw()·extra()·text()에 요청값이 그대로 들어가진 않는가?",
-      "n": 71
-    },
-    {
-      "id": "IMP-1.2-c2",
-      "name": "코드 삽입",
-      "article": "CWE-94, CWE-95",
-      "mistake": "허용 동작만 화이트리스트로 분기하는가?",
-      "n": 72
-    },
-    {
-      "id": "IMP-1.3-c2",
-      "name": "경로 조작 및 자원 삽입",
-      "article": "CWE-22, CWE-99",
-      "mistake": "허용 루트 밖으로 realpath가 나가는지 검사하는가?",
-      "n": 73
-    },
-    {
-      "id": "IMP-1.4-c2",
-      "name": "크로스사이트 스크립트",
-      "article": "CWE-79",
-      "mistake": "자동 이스케이프를 끄지 않았는가?",
-      "n": 74
-    },
-    {
-      "id": "IMP-1.5-c2",
-      "name": "운영체제 명령어 삽입",
-      "article": "CWE-78",
-      "mistake": "실행 파일과 인자를 배열로 넘기는가?",
-      "n": 75
-    },
-    {
-      "id": "IMP-1.6-c2",
-      "name": "위험한 형식 파일 업로드",
-      "article": "CWE-434",
-      "mistake": "저장 이름은 서버가 새로 만들고 웹루트 밖인가?",
-      "n": 76
-    },
-    {
-      "id": "IMP-1.6-c3",
-      "name": "위험한 형식 파일 업로드",
-      "article": "CWE-434",
-      "mistake": "실행 가능 확장자를 거부하는가?",
-      "n": 77
-    },
-    {
-      "id": "IMP-1.7-c2",
-      "name": "신뢰되지 않는 URL 주소로 자동접속 연결",
-      "article": "CWE-601",
-      "mistake": "허용 도메인 목록 밖이면 거절하는가?",
-      "n": 78
-    },
-    {
-      "id": "IMP-1.8-c2",
-      "name": "부적절한 XML 외부 개체 참조",
-      "article": "CWE-611",
-      "mistake": "네트워크·로컬 파일 해석을 끄고 파싱하는가?",
-      "n": 79
-    },
-    {
-      "id": "IMP-1.9-c2",
-      "name": "XML 삽입",
-      "article": "CWE-643",
-      "mistake": "바인딩 또는 이스케이프를 쓰는가?",
-      "n": 80
-    },
-    {
-      "id": "IMP-1.10-c2",
-      "name": "LDAP 삽입",
-      "article": "CWE-90",
-      "mistake": "LDAP 특수문자를 이스케이프하는가?",
-      "n": 81
-    },
-    {
-      "id": "IMP-1.11-c2",
-      "name": "크로스사이트 요청 위조",
-      "article": "CWE-352",
-      "mistake": "GET만으로 변경이 일어나는가?",
-      "n": 82
-    },
-    {
-      "id": "IMP-1.12-c2",
-      "name": "서버사이드 요청 위조",
-      "article": "CWE-918",
-      "mistake": "내부망·메타데이터 주소를 막는가?",
-      "n": 83
-    },
-    {
-      "id": "IMP-1.13-c2",
-      "name": "HTTP 응답분할",
-      "article": "CWE-113",
-      "mistake": "개행을 제거한 뒤에만 헤더에 쓰는가?",
-      "n": 84
-    },
-    {
-      "id": "IMP-1.14-c2",
-      "name": "정수형 오버플로우",
-      "article": "CWE-190",
-      "mistake": "곱·더하기 결과가 음수나 과대가 되지 않는가?",
-      "n": 85
-    },
-    {
-      "id": "IMP-1.15-c2",
-      "name": "보안기능 결정에 사용되는 부적절한 입력값",
-      "article": "CWE-807",
-      "mistake": "서버 세션의 역할만 믿는가?",
-      "n": 86
-    },
-    {
-      "id": "IMP-1.16-c2",
-      "name": "메모리 버퍼 오버플로우",
-      "article": "설계 ",
-      "mistake": "길이 검사를 먼저 하는가?",
-      "n": 87
-    },
-    {
-      "id": "IMP-1.17-c2",
-      "name": "포맷 스트링 삽입",
-      "article": "CWE-134",
-      "mistake": "포맷은 상수이고 값은 인자로만 넘기는가?",
-      "n": 88
-    },
-    {
-      "id": "IMP-2.1-c2",
-      "name": "적절한 인증 없는 중요 기능 허용",
-      "article": "CWE-306",
-      "mistake": "로그인 없이 열람·변경이 되는가?",
-      "n": 89
-    },
-    {
-      "id": "IMP-2.2-c2",
-      "name": "부적절한 인가",
-      "article": "CWE-285",
-      "mistake": "객체 단위 인가를 서버에서 하는가?",
-      "n": 90
-    },
-    {
-      "id": "IMP-2.3-c2",
-      "name": "중요한 자원에 대한 잘못된 권한 설정",
-      "article": "CWE-732",
-      "mistake": "최소 권한만 주는가?",
-      "n": 91
-    },
-    {
-      "id": "IMP-2.4-c2",
-      "name": "취약한 암호화 알고리즘 사용",
-      "article": "CWE-327",
-      "mistake": "현재 권고 알고리즘·모드인가?",
-      "n": 92
-    },
-    {
-      "id": "IMP-2.5-c2",
-      "name": "암호화되지 않은 중요정보",
-      "article": "CWE-312, CWE-319",
-      "mistake": "전송은 TLS이고 저장은 암호화인가?",
-      "n": 93
-    },
-    {
-      "id": "IMP-2.6-c2",
-      "name": "하드코드된 중요정보",
-      "article": "CWE-259, CWE-321",
-      "mistake": "환경변수나 비밀저장소를 읽는가?",
-      "n": 94
-    },
-    {
-      "id": "IMP-2.7-c2",
-      "name": "충분하지 않은 키 길이 사용",
-      "article": "CWE-326",
-      "mistake": "현재 권고 길이를 쓰는가?",
-      "n": 95
-    },
-    {
-      "id": "IMP-2.8-c2",
-      "name": "적절하지 않은 난수 값 사용",
-      "article": "CWE-330",
-      "mistake": "암호학 난수(secrets, crypto)인가?",
-      "n": 96
-    },
-    {
-      "id": "IMP-2.9-c2",
-      "name": "취약한 비밀번호 허용",
-      "article": "CWE-521",
-      "mistake": "최소 길이와 복잡도를 강제하는가?",
-      "n": 97
-    },
-    {
-      "id": "IMP-2.10-c2",
-      "name": "부적절한 전자서명 확인",
-      "article": "CWE-347",
-      "mistake": "신뢰 키로 서명을 검증하는가?",
-      "n": 98
-    },
-    {
-      "id": "IMP-2.11-c2",
-      "name": "부적절한 인증서 유효성 검증",
-      "article": "CWE-295",
-      "mistake": "체인·호스트·만료를 검사하는가?",
-      "n": 99
-    },
-    {
-      "id": "IMP-2.12-c2",
-      "name": "사용자 하드디스크에 저장되는 쿠키를 통한 정보노출",
-      "article": "CWE-539",
-      "mistake": "디스크에 남는 쿠키에 비밀을 넣는가?",
-      "n": 100
+      "n": 100,
+      "id": "KISA-100",
+      "name": "URL에 세션 ID",
+      "article": "DES-4.1",
+      "mistake": "세션 ID를 URL 쿼리에 실어 전달함"
     }
   ]
 }
