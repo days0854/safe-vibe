@@ -170,10 +170,37 @@ test_installer() {
   test_remote_pipe_refusal
 }
 
+test_release() {
+  local builder="$ROOT/scripts/build-release.sh"
+  local version="v0.1.0"
+  local archive="safe-vibe-$version.tar.gz"
+  [[ -f "$builder" ]] || fail "release builder is missing"
+  new_test_home
+  mkdir -p "$TEST_TMP/out-one" "$TEST_TMP/out-two"
+  bash "$builder" "$version" "$TEST_TMP/out-one" >/dev/null
+  bash "$builder" "$version" "$TEST_TMP/out-two" >/dev/null
+  cmp "$TEST_TMP/out-one/$archive" "$TEST_TMP/out-two/$archive" >/dev/null ||
+    fail "release archives are not reproducible"
+  verify_checksum_file "$TEST_TMP/out-one" "$archive.sha256" ||
+    fail "outer release checksum failed"
+  mkdir -p "$TEST_TMP/extracted"
+  tar -xzf "$TEST_TMP/out-one/$archive" -C "$TEST_TMP/extracted"
+  verify_checksum_file "$TEST_TMP/extracted/safe-vibe-$version" "manifest.sha256" ||
+    fail "packaged payload manifest failed"
+  HOME="$TEST_TMP/home" \
+    bash "$TEST_TMP/extracted/safe-vibe-$version/install.sh" >/dev/null
+  assert_installed_skill "$TEST_TMP/home/.cursor" "pipa-privacy"
+  if bash "$builder" "not-a-version" "$TEST_TMP/invalid" >/dev/null 2>&1; then
+    fail "release builder accepted an invalid version"
+  fi
+  pass "release build is reproducible and independently verifiable"
+}
+
 case "$MODE" in
   manifest) test_manifest ;;
   installer) test_installer ;;
-  all) test_manifest; test_installer ;;
+  release) test_release ;;
+  all) test_manifest; test_installer; test_release ;;
   *) fail "unknown test mode: $MODE" ;;
 esac
 

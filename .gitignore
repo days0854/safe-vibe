@@ -8,3 +8,4 @@ node_modules
 logo-source.png
 *.pyc
 .venv/
+dist/
