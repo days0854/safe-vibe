@@ -31,8 +31,8 @@ The installer must handle interrupted or truncated downloads, mixed-version file
 
 ## Build and Release
 
-- `scripts/build-release.sh <version> <output-dir>` validates the version, generates the internal manifest, and creates the release archive plus a checksum file.
-- The build uses sorted file order and normalized metadata so repeated builds from the same source produce the same archive hash.
+- `scripts/build-release.sh <version> <output-dir>` invokes a Python standard-library builder that validates the version and creates the release archive plus a checksum file.
+- The builder emits canonical USTAR entries and a fixed gzip stream with sorted paths, fixed modes and epoch metadata so the archive hash does not depend on the host tar/gzip versions.
 - A GitHub Actions workflow runs tests, builds the asset on a `v*` tag, and publishes both release files.
 - The release is created only from a clean, tested commit.
 

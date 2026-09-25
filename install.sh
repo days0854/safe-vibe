@@ -14,8 +14,9 @@ EXPECTED_MANIFEST_PATHS=(
 )
 
 usage() {
-  echo "Usage: bash install.sh [--with-init]"
+  echo "Usage: bash install.sh [--with-init] [--recover]"
   echo "  Installs pipa-privacy and kisa-secure-coding into Cursor (and Claude Code if present)."
+  echo "  --recover rolls back an interrupted transaction whose recorded process is no longer running."
 }
 
 die() {
@@ -24,9 +25,11 @@ die() {
 }
 
 WITH_INIT=0
+RECOVER=0
 for arg in "$@"; do
   case "$arg" in
     --with-init) WITH_INIT=1 ;;
+    --recover) RECOVER=1 ;;
     -h|--help) usage; exit 0 ;;
     "") ;;
     *) echo "unknown arg: $arg" >&2; usage; exit 1 ;;
@@ -49,6 +52,20 @@ _src="${BASH_SOURCE[0]:-}"
 ROOT="$(cd "$(dirname "$_src")" && pwd)"
 [[ -f "$ROOT/manifest.sha256" && -d "$ROOT/skills" ]] ||
   die "local packaged payload is incomplete; use the verified release archive"
+
+require_commands() {
+  local command_name
+  for command_name in awk basename cat cmp cp dirname grep ln mkdir mv rm rmdir uname; do
+    command -v "$command_name" >/dev/null 2>&1 ||
+      die "required command is missing: $command_name"
+  done
+  if ! command -v sha256sum >/dev/null 2>&1 &&
+    ! command -v shasum >/dev/null 2>&1; then
+    die "sha256sum or shasum is required"
+  fi
+}
+
+require_commands
 
 verify_manifest_layout() {
   local actual expected
@@ -78,31 +95,97 @@ TXN_PARENT=""
 TXN_DIR=""
 TXN_BACKUP=""
 TXN_LOCK=""
-TXN_INSTALLED=()
-TXN_BACKED_UP=()
+TXN_INSTALLED_JOURNAL=""
+TXN_BACKUP_JOURNAL=""
 RULE_TMP=""
+
+known_skill() {
+  case "$1" in
+    pipa-privacy|kisa-secure-coding) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+journal_is_safe() {
+  local journal="$1" skill
+  [[ -f "$journal" ]] || return 0
+  while IFS= read -r skill; do
+    [[ -z "$skill" ]] && continue
+    known_skill "$skill" || return 1
+  done < "$journal"
+}
 
 rollback_transaction() {
   local skill restore_failed=0
   [[ "$TXN_ACTIVE" -eq 1 ]] || return 0
-  for skill in "${TXN_INSTALLED[@]}"; do
-    rm -rf "$TXN_PARENT/$skill"
-  done
-  for skill in "${TXN_BACKED_UP[@]}"; do
-    if [[ -e "$TXN_BACKUP/$skill" || -L "$TXN_BACKUP/$skill" ]]; then
-      mv "$TXN_BACKUP/$skill" "$TXN_PARENT/$skill" || {
-        restore_failed=1
-        echo "error: could not restore $TXN_PARENT/$skill" >&2
-      }
-    fi
-  done
+  if [[ -f "$TXN_DIR/committed" ]]; then
+    rm -rf "$TXN_DIR" "$TXN_LOCK"
+    TXN_ACTIVE=0
+    return 0
+  fi
+  journal_is_safe "$TXN_INSTALLED_JOURNAL" &&
+    journal_is_safe "$TXN_BACKUP_JOURNAL" ||
+    die "transaction journal contains an unexpected skill name"
+  if [[ -f "$TXN_INSTALLED_JOURNAL" ]]; then
+    while IFS= read -r skill; do
+      [[ -z "$skill" ]] && continue
+      rm -rf "$TXN_PARENT/$skill"
+    done < "$TXN_INSTALLED_JOURNAL"
+  fi
+  if [[ -f "$TXN_BACKUP_JOURNAL" ]]; then
+    while IFS= read -r skill; do
+      [[ -z "$skill" ]] && continue
+      if [[ -e "$TXN_BACKUP/$skill" || -L "$TXN_BACKUP/$skill" ]]; then
+        mv "$TXN_BACKUP/$skill" "$TXN_PARENT/$skill" || {
+          restore_failed=1
+          echo "error: could not restore $TXN_PARENT/$skill" >&2
+        }
+      fi
+    done < "$TXN_BACKUP_JOURNAL"
+  fi
   if [[ "$restore_failed" -eq 0 ]]; then
-    rm -rf "$TXN_DIR"
+    rm -rf "$TXN_DIR" "$TXN_LOCK"
   else
     echo "error: recovery files retained at $TXN_DIR" >&2
+    echo "error: resolve the filesystem problem, then rerun with --recover" >&2
   fi
-  rmdir "$TXN_LOCK" 2>/dev/null || true
   TXN_ACTIVE=0
+}
+
+recover_stale_lock() {
+  local parent="$1" lock="$2" owner_pid="" recorded_txn=""
+  [[ -d "$lock" ]] || return 0
+  [[ "$RECOVER" -eq 1 ]] ||
+    die "another or interrupted Safe Vibe installation exists at $parent; rerun with --recover after confirming no installer is active"
+  [[ -f "$lock/pid" ]] ||
+    die "lock metadata is incomplete at $lock; do not remove it until no installer is active"
+  owner_pid="$(cat "$lock/pid")"
+  case "$owner_pid" in
+    ""|*[!0-9]*) die "lock metadata has an invalid process id at $lock" ;;
+  esac
+  if kill -0 "$owner_pid" 2>/dev/null; then
+    die "Safe Vibe installer process $owner_pid is still active"
+  fi
+  if [[ -f "$lock/transaction" ]]; then
+    recorded_txn="$(cat "$lock/transaction")"
+  fi
+  if [[ -n "$recorded_txn" ]]; then
+    [[ "$(dirname "$recorded_txn")" == "$parent" &&
+      "$(basename "$recorded_txn")" == .safe-vibe-transaction.* ]] ||
+      die "lock contains an unsafe transaction path"
+    [[ -d "$recorded_txn" ]] ||
+      die "recorded transaction directory is missing: $recorded_txn"
+    TXN_PARENT="$parent"
+    TXN_LOCK="$lock"
+    TXN_DIR="$recorded_txn"
+    TXN_BACKUP="$TXN_DIR/backup"
+    TXN_INSTALLED_JOURNAL="$TXN_DIR/installed"
+    TXN_BACKUP_JOURNAL="$TXN_DIR/backed-up"
+    TXN_ACTIVE=1
+    rollback_transaction
+  else
+    rm -rf "$lock"
+  fi
 }
 
 on_exit() {
@@ -126,15 +209,20 @@ install_one() {
   TXN_LOCK="$TXN_PARENT/.safe-vibe-install.lock"
   TXN_DIR="$TXN_PARENT/.safe-vibe-transaction.$$.$RANDOM"
   TXN_BACKUP="$TXN_DIR/backup"
-  TXN_INSTALLED=()
-  TXN_BACKED_UP=()
+  TXN_INSTALLED_JOURNAL="$TXN_DIR/installed"
+  TXN_BACKUP_JOURNAL="$TXN_DIR/backed-up"
 
   mkdir -p "$TXN_PARENT"
+  recover_stale_lock "$TXN_PARENT" "$TXN_LOCK"
   if ! mkdir "$TXN_LOCK" 2>/dev/null; then
     die "another Safe Vibe installation is active at $TXN_PARENT"
   fi
   TXN_ACTIVE=1
   mkdir -p "$TXN_DIR/stage" "$TXN_BACKUP"
+  : > "$TXN_INSTALLED_JOURNAL"
+  : > "$TXN_BACKUP_JOURNAL"
+  printf '%s\n' "$$" > "$TXN_LOCK/pid"
+  printf '%s\n' "$TXN_DIR" > "$TXN_LOCK/transaction"
 
   for skill in "${SKILLS[@]}"; do
     mkdir -p "$TXN_DIR/stage/$skill"
@@ -147,18 +235,25 @@ install_one() {
 
   for skill in "${SKILLS[@]}"; do
     if [[ -e "$TXN_PARENT/$skill" || -L "$TXN_PARENT/$skill" ]]; then
+      printf '%s\n' "$skill" >> "$TXN_BACKUP_JOURNAL"
       mv "$TXN_PARENT/$skill" "$TXN_BACKUP/$skill"
-      TXN_BACKED_UP+=("$skill")
     fi
   done
 
+  if [[ "${SAFE_VIBE_TESTING:-0}" == "1" &&
+    "${SAFE_VIBE_TEST_FAIL_AFTER_BACKUP:-0}" == "1" ]]; then
+    echo "error: injected post-backup failure" >&2
+    rollback_transaction
+    return 1
+  fi
+
   for skill in "${SKILLS[@]}"; do
+    printf '%s\n' "$skill" >> "$TXN_INSTALLED_JOURNAL"
     if ! mv "$TXN_DIR/stage/$skill" "$TXN_PARENT/$skill"; then
       echo "error: could not replace $TXN_PARENT/$skill" >&2
       rollback_transaction
       return 1
     fi
-    TXN_INSTALLED+=("$skill")
     installed_count=$((installed_count + 1))
     if [[ "${SAFE_VIBE_TESTING:-0}" == "1" &&
       "${SAFE_VIBE_TEST_FAIL_AFTER_FIRST_REPLACE:-0}" == "1" &&
@@ -170,9 +265,10 @@ install_one() {
     echo "  installed $TXN_PARENT/$skill"
   done
 
-  rm -rf "$TXN_DIR"
+  : > "$TXN_DIR/committed"
   TXN_ACTIVE=0
-  if ! rmdir "$TXN_LOCK"; then
+  rm -rf "$TXN_DIR"
+  if ! rm -rf "$TXN_LOCK"; then
     die "installation succeeded but lock cleanup failed at $TXN_LOCK"
   fi
 }
@@ -192,11 +288,8 @@ fi
 
 if [[ "$WITH_INIT" -eq 1 ]]; then
   mkdir -p .cursor/rules
-  if [[ -e .cursor/rules/safe-vibe.mdc || -L .cursor/rules/safe-vibe.mdc ]]; then
-    echo "  kept existing $(pwd)/.cursor/rules/safe-vibe.mdc"
-  else
-    RULE_TMP=".cursor/rules/.safe-vibe.mdc.$$.$RANDOM"
-    cat > "$RULE_TMP" << 'MDC'
+  RULE_TMP=".cursor/rules/.safe-vibe.mdc.$$.$RANDOM"
+  cat > "$RULE_TMP" << 'MDC'
 ---
 description: Safe Vibe — 개인정보보호·시큐어코딩 스킬을 쓸 것
 alwaysApply: true
@@ -206,9 +299,14 @@ alwaysApply: true
 애플리케이션 코드를 쓰거나 리뷰할 때는 kisa-secure-coding 스킬과 catalog.json을 본다.
 법률 자문이 아니며 원문 PDF·조문 전문을 인용하지 않는다.
 MDC
-    mv "$RULE_TMP" .cursor/rules/safe-vibe.mdc
+  if ln "$RULE_TMP" .cursor/rules/safe-vibe.mdc 2>/dev/null; then
+    rm -f "$RULE_TMP"
     RULE_TMP=""
     echo "  wrote $(pwd)/.cursor/rules/safe-vibe.mdc"
+  else
+    rm -f "$RULE_TMP"
+    RULE_TMP=""
+    echo "  kept existing $(pwd)/.cursor/rules/safe-vibe.mdc"
   fi
 fi
 

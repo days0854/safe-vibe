@@ -6,7 +6,7 @@
 
 **Architecture:** A tracked payload manifest verifies local files before installation. The installer copies verified files into same-filesystem staging directories, locks each target and rolls back replacements on failure. A deterministic release builder packages the verified tree; documentation publishes a fixed outer archive hash.
 
-**Tech Stack:** Bash 3.2+, curl, POSIX utilities, SHA-256 (`sha256sum` or `shasum`), GNU tar/gzip for release builds, GitHub Actions
+**Tech Stack:** Bash 3.2+, curl, POSIX utilities, SHA-256 (`sha256sum` or `shasum`), Python 3 standard library for reproducible release builds, GitHub Actions
 
 ## Global Constraints
 
@@ -103,7 +103,7 @@ Expected: failure because the builder is absent.
 
 - [ ] **Step 3: Implement deterministic packaging**
 
-Validate `vMAJOR.MINOR.PATCH`, verify the manifest, copy only approved files, and use sorted entries, epoch timestamps, numeric owner/group and `gzip -n`.
+Validate `vMAJOR.MINOR.PATCH`, verify the manifest, copy only approved files, and emit canonical USTAR/gzip bytes with sorted entries, epoch timestamps and numeric owner/group.
 
 - [ ] **Step 4: Verify GREEN**
 

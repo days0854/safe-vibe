@@ -133,6 +133,35 @@ test_rollback() {
   pass "replacement failure restores both previous skills"
 }
 
+test_pre_replacement_rollback() {
+  new_test_home
+  local skill
+  for skill in pipa-privacy kisa-secure-coding; do
+    mkdir -p "$TEST_TMP/home/.cursor/skills/$skill"
+    printf 'original-%s\n' "$skill" > "$TEST_TMP/home/.cursor/skills/$skill/marker"
+  done
+  if SAFE_VIBE_TESTING=1 SAFE_VIBE_TEST_FAIL_AFTER_BACKUP=1 \
+    run_installer "$TEST_TMP/home" >/dev/null 2>&1; then
+    fail "injected post-backup failure unexpectedly succeeded"
+  fi
+  for skill in pipa-privacy kisa-secure-coding; do
+    [[ "$(cat "$TEST_TMP/home/.cursor/skills/$skill/marker")" == "original-$skill" ]] ||
+      fail "$skill was not restored after post-backup failure"
+  done
+  pass "post-backup failure restores an empty install journal safely"
+}
+
+test_stale_lock_recovery() {
+  new_test_home
+  local lock="$TEST_TMP/home/.cursor/skills/.safe-vibe-install.lock"
+  mkdir -p "$lock"
+  printf '999999\n' > "$lock/pid"
+  run_installer "$TEST_TMP/home" --recover >/dev/null
+  assert_installed_skill "$TEST_TMP/home/.cursor" "pipa-privacy"
+  [[ ! -e "$lock" ]] || fail "stale lock was not removed after recovery"
+  pass "explicit recovery clears a stale lock and resumes installation"
+}
+
 test_rule_preservation() {
   new_test_home
   mkdir -p "$TEST_TMP/project/.cursor/rules"
@@ -166,6 +195,8 @@ test_installer() {
   test_manifest_rejection
   test_lock_rejection
   test_rollback
+  test_pre_replacement_rollback
+  test_stale_lock_recovery
   test_rule_preservation
   test_remote_pipe_refusal
 }
@@ -176,6 +207,10 @@ test_release() {
   local archive="safe-vibe-$version.tar.gz"
   local expected actual
   [[ -f "$builder" ]] || fail "release builder is missing"
+  [[ -f "$ROOT/scripts/build_release.py" ]] ||
+    fail "deterministic Python archive builder is missing"
+  grep -Fq 'python3 "$ROOT/scripts/build_release.py"' "$builder" ||
+    fail "release wrapper does not use the deterministic archive builder"
   new_test_home
   mkdir -p "$TEST_TMP/out-one" "$TEST_TMP/out-two"
   bash "$builder" "$version" "$TEST_TMP/out-one" >/dev/null
@@ -217,6 +252,8 @@ test_docs() {
     fail "release workflow does not run the complete installer suite"
   grep -Fq "gh release create" "$workflow" ||
     fail "release workflow does not publish through GitHub CLI"
+  grep -Fq 'test "$pinned_version" = "$GITHUB_REF_NAME"' "$workflow" ||
+    fail "release workflow does not require the tag to match the documented version"
   ! grep -Fq "__SAFE_VIBE_" "$readme" ||
     fail "README contains an unresolved release placeholder"
   pass "documentation pins a verified release and CI tests before publishing"
