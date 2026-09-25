@@ -95,6 +95,7 @@ TXN_PARENT=""
 TXN_DIR=""
 TXN_BACKUP=""
 TXN_LOCK=""
+TXN_LOCK_OWNED=0
 TXN_INSTALLED_JOURNAL=""
 TXN_BACKUP_JOURNAL=""
 RULE_TMP=""
@@ -115,11 +116,19 @@ journal_is_safe() {
   done < "$journal"
 }
 
+remove_owned_lock() {
+  if [[ "$TXN_LOCK_OWNED" -eq 1 ]]; then
+    rm -rf "$TXN_LOCK"
+    TXN_LOCK_OWNED=0
+  fi
+}
+
 rollback_transaction() {
   local skill restore_failed=0
   [[ "$TXN_ACTIVE" -eq 1 ]] || return 0
   if [[ -f "$TXN_DIR/committed" ]]; then
-    rm -rf "$TXN_DIR" "$TXN_LOCK"
+    rm -rf "$TXN_DIR"
+    remove_owned_lock
     TXN_ACTIVE=0
     return 0
   fi
@@ -144,7 +153,8 @@ rollback_transaction() {
     done < "$TXN_BACKUP_JOURNAL"
   fi
   if [[ "$restore_failed" -eq 0 ]]; then
-    rm -rf "$TXN_DIR" "$TXN_LOCK"
+    rm -rf "$TXN_DIR"
+    remove_owned_lock
   else
     echo "error: recovery files retained at $TXN_DIR" >&2
     echo "error: resolve the filesystem problem, then rerun with --recover" >&2
@@ -154,29 +164,37 @@ rollback_transaction() {
 
 recover_stale_lock() {
   local parent="$1" lock="$2" owner_pid="" recorded_txn=""
-  [[ -d "$lock" ]] || return 0
+  [[ -e "$lock" || -L "$lock" ]] || return 0
   [[ "$RECOVER" -eq 1 ]] ||
     die "another or interrupted Safe Vibe installation exists at $parent; rerun with --recover after confirming no installer is active"
-  [[ -f "$lock/pid" ]] ||
-    die "lock metadata is incomplete at $lock; do not remove it until no installer is active"
-  owner_pid="$(cat "$lock/pid")"
+  if [[ -f "$lock" && ! -L "$lock" ]]; then
+    owner_pid="$(awk 'NR == 1 { print; exit }' "$lock")"
+    recorded_txn="$(awk 'NR == 2 { print; exit }' "$lock")"
+  elif [[ -d "$lock" && -f "$lock/pid" ]]; then
+    owner_pid="$(cat "$lock/pid")"
+    if [[ -f "$lock/transaction" ]]; then
+      recorded_txn="$(cat "$lock/transaction")"
+    fi
+  else
+    die "lock metadata is invalid at $lock"
+  fi
   case "$owner_pid" in
     ""|*[!0-9]*) die "lock metadata has an invalid process id at $lock" ;;
   esac
   if kill -0 "$owner_pid" 2>/dev/null; then
     die "Safe Vibe installer process $owner_pid is still active"
   fi
-  if [[ -f "$lock/transaction" ]]; then
-    recorded_txn="$(cat "$lock/transaction")"
-  fi
   if [[ -n "$recorded_txn" ]]; then
     [[ "$(dirname "$recorded_txn")" == "$parent" &&
       "$(basename "$recorded_txn")" == .safe-vibe-transaction.* ]] ||
       die "lock contains an unsafe transaction path"
-    [[ -d "$recorded_txn" ]] ||
-      die "recorded transaction directory is missing: $recorded_txn"
+    if [[ ! -d "$recorded_txn" ]]; then
+      rm -rf "$lock"
+      return 0
+    fi
     TXN_PARENT="$parent"
     TXN_LOCK="$lock"
+    TXN_LOCK_OWNED=1
     TXN_DIR="$recorded_txn"
     TXN_BACKUP="$TXN_DIR/backup"
     TXN_INSTALLED_JOURNAL="$TXN_DIR/installed"
@@ -204,25 +222,28 @@ trap 'exit 143' TERM
 
 install_one() {
   local dest_root="$1"
-  local skill file installed_count=0
+  local skill file installed_count=0 lock_candidate
   TXN_PARENT="$dest_root/skills"
   TXN_LOCK="$TXN_PARENT/.safe-vibe-install.lock"
   TXN_DIR="$TXN_PARENT/.safe-vibe-transaction.$$.$RANDOM"
   TXN_BACKUP="$TXN_DIR/backup"
   TXN_INSTALLED_JOURNAL="$TXN_DIR/installed"
   TXN_BACKUP_JOURNAL="$TXN_DIR/backed-up"
+  TXN_LOCK_OWNED=0
 
   mkdir -p "$TXN_PARENT"
   recover_stale_lock "$TXN_PARENT" "$TXN_LOCK"
-  if ! mkdir "$TXN_LOCK" 2>/dev/null; then
-    die "another Safe Vibe installation is active at $TXN_PARENT"
-  fi
-  TXN_ACTIVE=1
   mkdir -p "$TXN_DIR/stage" "$TXN_BACKUP"
+  TXN_ACTIVE=1
   : > "$TXN_INSTALLED_JOURNAL"
   : > "$TXN_BACKUP_JOURNAL"
-  printf '%s\n' "$$" > "$TXN_LOCK/pid"
-  printf '%s\n' "$TXN_DIR" > "$TXN_LOCK/transaction"
+  lock_candidate="$TXN_DIR/lock"
+  printf '%s\n%s\n' "$$" "$TXN_DIR" > "$lock_candidate"
+  if ! ln "$lock_candidate" "$TXN_LOCK" 2>/dev/null; then
+    rollback_transaction
+    die "another Safe Vibe installation is active at $TXN_PARENT"
+  fi
+  TXN_LOCK_OWNED=1
 
   for skill in "${SKILLS[@]}"; do
     mkdir -p "$TXN_DIR/stage/$skill"
@@ -268,9 +289,10 @@ install_one() {
   : > "$TXN_DIR/committed"
   TXN_ACTIVE=0
   rm -rf "$TXN_DIR"
-  if ! rm -rf "$TXN_LOCK"; then
+  if ! rm -f "$TXN_LOCK"; then
     die "installation succeeded but lock cleanup failed at $TXN_LOCK"
   fi
+  TXN_LOCK_OWNED=0
 }
 
 echo "Safe Vibe installer (OS=$OS)"

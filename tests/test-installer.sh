@@ -154,8 +154,8 @@ test_pre_replacement_rollback() {
 test_stale_lock_recovery() {
   new_test_home
   local lock="$TEST_TMP/home/.cursor/skills/.safe-vibe-install.lock"
-  mkdir -p "$lock"
-  printf '999999\n' > "$lock/pid"
+  mkdir -p "$(dirname "$lock")"
+  printf '999999\n\n' > "$lock"
   run_installer "$TEST_TMP/home" --recover >/dev/null
   assert_installed_skill "$TEST_TMP/home/.cursor" "pipa-privacy"
   [[ ! -e "$lock" ]] || fail "stale lock was not removed after recovery"
