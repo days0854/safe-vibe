@@ -6,17 +6,46 @@
 
 ## 설치
 
+릴리스 파일을 내려받고 고정된 SHA-256이 일치할 때만 로컬 설치기를 실행합니다.
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/days0854/safe-vibe/main/install.sh | bash
+(
+  set -eu
+  SAFE_VIBE_VERSION='v0.1.0'
+  SAFE_VIBE_SHA256='df8a91dab00cc2928c1afa99edc92b8ac35758a5a25c6d08a22a92ce8d964a9e'
+  SAFE_VIBE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/safe-vibe-download.XXXXXX")"
+  trap 'rm -rf "$SAFE_VIBE_TMP"' EXIT
+  SAFE_VIBE_ARCHIVE="$SAFE_VIBE_TMP/safe-vibe-$SAFE_VIBE_VERSION.tar.gz"
+  curl --proto '=https' --tlsv1.2 --fail --location --retry 3 \
+    --connect-timeout 10 --max-time 120 \
+    --output "$SAFE_VIBE_ARCHIVE" \
+    "https://github.com/days0854/safe-vibe/releases/download/$SAFE_VIBE_VERSION/safe-vibe-$SAFE_VIBE_VERSION.tar.gz"
+  if command -v sha256sum >/dev/null 2>&1; then
+    SAFE_VIBE_ACTUAL="$(sha256sum "$SAFE_VIBE_ARCHIVE" | awk '{print $1}')"
+  elif command -v shasum >/dev/null 2>&1; then
+    SAFE_VIBE_ACTUAL="$(shasum -a 256 "$SAFE_VIBE_ARCHIVE" | awk '{print $1}')"
+  else
+    echo "sha256sum 또는 shasum이 필요합니다." >&2
+    exit 1
+  fi
+  [ "$SAFE_VIBE_ACTUAL" = "$SAFE_VIBE_SHA256" ] || {
+    echo "SHA-256 검증에 실패했습니다. 설치를 중단합니다." >&2
+    exit 1
+  }
+  tar -xzf "$SAFE_VIBE_ARCHIVE" -C "$SAFE_VIBE_TMP"
+  bash "$SAFE_VIBE_TMP/safe-vibe-$SAFE_VIBE_VERSION/install.sh"
+)
 ```
 
-로컬 클론에서 설치:
+다운로드 파일은 실행 전에 HTTPS, 고정 버전 및 SHA-256으로 검증됩니다. 프로젝트 규칙까지 만들려면 마지막 `bash` 명령에 `--with-init`을 추가합니다.
+
+로컬 클론에서는 페이로드 해시를 검증한 뒤 같은 트랜잭션 설치기를 실행합니다.
 
 ```bash
 bash install.sh
 ```
 
-에이전트에게 두 스킬을 쓰라고 한 줄 규칙을 남기려면 `bash install.sh --with-init` (현재 디렉터리에 `.cursor/rules/safe-vibe.mdc`).
+기존 `.cursor/rules/safe-vibe.mdc`는 덮어쓰지 않습니다.
 
 macOS / Linux / WSL. Cursor(`~/.cursor/skills`)에 두 스킬을 복사한다. `~/.claude`가 있으면 Claude Code 스킬 폴더에도 넣는다.
 

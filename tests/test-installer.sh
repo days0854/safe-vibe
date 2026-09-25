@@ -174,6 +174,7 @@ test_release() {
   local builder="$ROOT/scripts/build-release.sh"
   local version="v0.1.0"
   local archive="safe-vibe-$version.tar.gz"
+  local expected actual
   [[ -f "$builder" ]] || fail "release builder is missing"
   new_test_home
   mkdir -p "$TEST_TMP/out-one" "$TEST_TMP/out-two"
@@ -183,6 +184,10 @@ test_release() {
     fail "release archives are not reproducible"
   verify_checksum_file "$TEST_TMP/out-one" "$archive.sha256" ||
     fail "outer release checksum failed"
+  expected="$(sed -n "s/.*SAFE_VIBE_SHA256='\([0-9a-f]\{64\}\)'.*/\1/p" "$ROOT/README.md")"
+  actual="$(awk '{ print $1 }' "$TEST_TMP/out-one/$archive.sha256")"
+  [[ "$actual" == "$expected" ]] ||
+    fail "README checksum does not match the reproducible release archive"
   mkdir -p "$TEST_TMP/extracted"
   tar -xzf "$TEST_TMP/out-one/$archive" -C "$TEST_TMP/extracted"
   verify_checksum_file "$TEST_TMP/extracted/safe-vibe-$version" "manifest.sha256" ||
@@ -196,11 +201,33 @@ test_release() {
   pass "release build is reproducible and independently verifiable"
 }
 
+test_docs() {
+  local readme="$ROOT/README.md"
+  local workflow="$ROOT/.github/workflows/release.yml"
+  ! grep -Fq "raw.githubusercontent.com/days0854/safe-vibe/main/install.sh | bash" "$readme" ||
+    fail "README still recommends mutable remote execution"
+  [[ -f "$workflow" ]] || fail "release workflow is missing"
+  grep -Fq "SAFE_VIBE_VERSION='v0.1.0'" "$readme" ||
+    fail "README does not pin v0.1.0"
+  grep -Eq "SAFE_VIBE_SHA256='[0-9a-f]{64}'" "$readme" ||
+    fail "README does not pin a SHA-256 digest"
+  grep -Fq -- "--proto '=https'" "$readme" ||
+    fail "README curl command does not require HTTPS"
+  grep -Fq "bash tests/test-installer.sh all" "$workflow" ||
+    fail "release workflow does not run the complete installer suite"
+  grep -Fq "gh release create" "$workflow" ||
+    fail "release workflow does not publish through GitHub CLI"
+  ! grep -Fq "__SAFE_VIBE_" "$readme" ||
+    fail "README contains an unresolved release placeholder"
+  pass "documentation pins a verified release and CI tests before publishing"
+}
+
 case "$MODE" in
   manifest) test_manifest ;;
   installer) test_installer ;;
   release) test_release ;;
-  all) test_manifest; test_installer; test_release ;;
+  docs) test_docs ;;
+  all) test_manifest; test_installer; test_release; test_docs ;;
   *) fail "unknown test mode: $MODE" ;;
 esac
 
