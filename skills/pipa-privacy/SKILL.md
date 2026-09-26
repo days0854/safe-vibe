@@ -73,7 +73,7 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 | PIPA-18 | 생성형 AI 학습·이용 고지 | 작성지침 부록1 | low |
 | PIPA-19 | 자동화된 결정 고지 | 제37조의2 | low |
 | PIPA-20 | 처리방침 변경 고지 | 제30조 | medium |
-| PIPA-21 | 유출 통지·신고 | 제34조 제2항, 제34조 제4항 | high |
+| PIPA-21 | 유출 통지·신고 | 제34조 제1항, 제34조 제2항, 제34조 제4항 | high |
 | PIPA-22 | 개인정보취급자 감독 | 제28조 | high |
 | PIPA-23 | 추가 이용·제공 | 제15조 제3항, 제17조 제4항 | medium |
 | PIPA-24 | 목적 외 이용·제공 제한 | 제18조 | medium |

@@ -7,7 +7,9 @@
     {
       "id": "PIPA-1",
       "name": "수집 최소화",
-      "article": "제16조",
+      "article": [
+        "제16조"
+      ],
       "unsafe_signals": [
         "required gender/ssn/birth on signup",
         "collect unused profile fields"
@@ -19,7 +21,9 @@
     {
       "id": "PIPA-2",
       "name": "수집·이용 고지 4종",
-      "article": "제15조 제2항",
+      "article": [
+        "제15조 제2항"
+      ],
       "unsafe_signals": [
         "consent checkbox without purpose/items/period/refusal",
         "privacy agree only"
@@ -31,7 +35,10 @@
     {
       "id": "PIPA-3",
       "name": "동의 분리",
-      "article": "제22조, 제22조 제1항",
+      "article": [
+        "제22조",
+        "제22조 제1항"
+      ],
       "unsafe_signals": [
         "single checkbox for terms+privacy+marketing",
         "one agree-all covering marketing"
@@ -43,7 +50,9 @@
     {
       "id": "PIPA-4",
       "name": "동의 처리와 동의 없는 처리 구분 표시",
-      "article": "제22조 제3항",
+      "article": [
+        "제22조 제3항"
+      ],
       "unsafe_signals": [
         "mixed consent and non-consent items in one list",
         "legal basis missing for non-consent processing"
@@ -55,7 +64,9 @@
     {
       "id": "PIPA-5",
       "name": "만 14세 미만 법정대리인 동의",
-      "article": "제22조의2",
+      "article": [
+        "제22조의2"
+      ],
       "unsafe_signals": [
         "signup without age gate",
         "no legal-guardian consent step"
@@ -67,7 +78,10 @@
     {
       "id": "PIPA-6",
       "name": "고유식별정보·주민등록번호",
-      "article": "제24조, 제24조의2",
+      "article": [
+        "제24조",
+        "제24조의2"
+      ],
       "unsafe_signals": [
         "input name=ssn",
         "input name=jumin",
@@ -81,7 +95,9 @@
     {
       "id": "PIPA-7",
       "name": "민감정보 별도 동의",
-      "article": "제23조",
+      "article": [
+        "제23조"
+      ],
       "unsafe_signals": [
         "health/religion/biometric in default signup",
         "sensitive items under general consent"
@@ -93,7 +109,9 @@
     {
       "id": "PIPA-8",
       "name": "제3자 제공 별도 동의·고지",
-      "article": "제17조",
+      "article": [
+        "제17조"
+      ],
       "unsafe_signals": [
         "share user data with partner without separate consent",
         "third-party provide buried in terms"
@@ -105,7 +123,9 @@
     {
       "id": "PIPA-9",
       "name": "처리위탁 공개",
-      "article": "제26조",
+      "article": [
+        "제26조"
+      ],
       "unsafe_signals": [
         "vendor processing with no processor list",
         "위탁 항목 없음"
@@ -117,7 +137,9 @@
     {
       "id": "PIPA-10",
       "name": "국외이전 고지·동의 또는 요건",
-      "article": "제28조의8",
+      "article": [
+        "제28조의8"
+      ],
       "unsafe_signals": [
         "fetch to overseas LLM with user PII, no notice",
         "foreign region with no transfer notice"
@@ -129,7 +151,9 @@
     {
       "id": "PIPA-11",
       "name": "보유기간·파기",
-      "article": "제21조",
+      "article": [
+        "제21조"
+      ],
       "unsafe_signals": [
         "DELETE user soft-delete only, no purge job",
         "no retention period"
@@ -141,7 +165,9 @@
     {
       "id": "PIPA-12",
       "name": "처리방침 수립·공개",
-      "article": "제30조",
+      "article": [
+        "제30조"
+      ],
       "unsafe_signals": [
         "no 처리방침 / privacy link",
         "privacy policy missing required sections"
@@ -153,7 +179,10 @@
     {
       "id": "PIPA-13",
       "name": "쿠키·자동수집 고지·거부",
-      "article": "제30조, 제30조 제1항 제7호",
+      "article": [
+        "제30조",
+        "제30조 제1항 제7호"
+      ],
       "unsafe_signals": [
         "document.cookie without notice",
         "analytics without notice"
@@ -165,7 +194,9 @@
     {
       "id": "PIPA-14",
       "name": "안전조치 암호화·접근통제",
-      "article": "제29조",
+      "article": [
+        "제29조"
+      ],
       "unsafe_signals": [
         "plaintext password store",
         "hardcoded api key with PII store"
@@ -177,7 +208,9 @@
     {
       "id": "PIPA-15",
       "name": "노출 방지",
-      "article": "제34조의2",
+      "article": [
+        "제34조의2"
+      ],
       "unsafe_signals": [
         "console.log email/phone",
         "table showing full ssn",
@@ -190,7 +223,9 @@
     {
       "id": "PIPA-16",
       "name": "개인정보 보호책임자 공개",
-      "article": "제31조",
+      "article": [
+        "제31조"
+      ],
       "unsafe_signals": [
         "no privacy officer",
         "footer without CPO/contact"
@@ -202,7 +237,13 @@
     {
       "id": "PIPA-17",
       "name": "정보주체 권리 행사 창구",
-      "article": "제35조, 제35조의2, 제36조, 제37조, 제38조",
+      "article": [
+        "제35조",
+        "제35조의2",
+        "제36조",
+        "제37조",
+        "제38조"
+      ],
       "unsafe_signals": [
         "no delete/withdraw",
         "no access or rectify endpoint"
@@ -214,7 +255,9 @@
     {
       "id": "PIPA-18",
       "name": "생성형 AI 학습·이용 고지",
-      "article": "작성지침 부록1",
+      "article": [
+        "작성지침 부록1"
+      ],
       "unsafe_signals": [
         "send user content to LLM with no AI notice",
         "training on user data hidden"
@@ -226,7 +269,9 @@
     {
       "id": "PIPA-19",
       "name": "자동화된 결정 고지",
-      "article": "제37조의2",
+      "article": [
+        "제37조의2"
+      ],
       "unsafe_signals": [
         "auto reject/scoring with no notice",
         "no human-review or explanation path"
@@ -238,7 +283,9 @@
     {
       "id": "PIPA-20",
       "name": "처리방침 변경 고지",
-      "article": "제30조",
+      "article": [
+        "제30조"
+      ],
       "unsafe_signals": [
         "silent policy overwrite",
         "no changelog or effective date"
@@ -251,6 +298,7 @@
       "id": "PIPA-21",
       "name": "유출 통지·신고",
       "article": [
+        "제34조 제1항",
         "제34조 제2항",
         "제34조 제4항"
       ],
@@ -258,14 +306,16 @@
         "breach detected with no notice path",
         "notice sent with no timestamp"
       ],
-      "fix_principle": "인지 시각과 통지·신고 시각을 남기고, 기한 안에 알릴 절차를 코드와 운영에 두어라.",
+      "fix_principle": "확인된 유출은 정보주체 통지(제1항), 유출 가능성은 통지(제2항), 신고는 제4항으로 나누어 시각과 대상을 남겨라.",
       "agent_when": "유출 대응, 알림 발송, 사고 로그를 구현할 때",
       "priority": "high"
     },
     {
       "id": "PIPA-22",
       "name": "개인정보취급자 감독",
-      "article": "제28조",
+      "article": [
+        "제28조"
+      ],
       "unsafe_signals": [
         "shared admin account",
         "every staff user is admin"
@@ -291,7 +341,9 @@
     {
       "id": "PIPA-24",
       "name": "목적 외 이용·제공 제한",
-      "article": "제18조",
+      "article": [
+        "제18조"
+      ],
       "unsafe_signals": [
         "share with a recipient missing from the notice"
       ],
@@ -302,7 +354,9 @@
     {
       "id": "PIPA-25",
       "name": "수집 근거",
-      "article": "제15조 제1항",
+      "article": [
+        "제15조 제1항"
+      ],
       "unsafe_signals": [
         "collect fields before consent and without a stated basis"
       ],

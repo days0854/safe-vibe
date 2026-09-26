@@ -16,8 +16,10 @@ EXPECTED_MANIFEST_PATHS=(
 )
 
 usage() {
-  echo "Usage: bash install.sh [--with-init] [--recover]"
+  echo "Usage: bash install.sh [--with-init] [--recover] [--uninstall] [--target=cursor|claude|both]"
   echo "  Installs pipa-privacy and kisa-secure-coding into Cursor (and Claude Code if present)."
+  echo "  --target chooses cursor, claude, or both. The default is both."
+  echo "  --uninstall removes the two skill folders from the selected target."
   echo "  --recover rolls back an interrupted transaction whose recorded process is no longer running."
 }
 
@@ -28,10 +30,20 @@ die() {
 
 WITH_INIT=0
 RECOVER=0
+UNINSTALL=0
+TARGET="both"
 for arg in "$@"; do
   case "$arg" in
     --with-init) WITH_INIT=1 ;;
     --recover) RECOVER=1 ;;
+    --uninstall) UNINSTALL=1 ;;
+    --target=*)
+      TARGET="${arg#--target=}"
+      case "$TARGET" in
+        cursor|claude|both) ;;
+        *) die "target must be cursor, claude, or both" ;;
+      esac
+      ;;
     -h|--help) usage; exit 0 ;;
     "") ;;
     *) echo "unknown arg: $arg" >&2; usage; exit 1 ;;
@@ -288,6 +300,17 @@ install_one() {
     echo "  installed $TXN_PARENT/$skill"
   done
 
+  if [[ -s "$TXN_BACKUP_JOURNAL" ]]; then
+    local kept
+    kept="$TXN_PARENT/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+    mkdir -p "$kept"
+    while IFS= read -r skill || [[ -n "${skill:-}" ]]; do
+      [[ -n "${skill:-}" ]] || continue
+      mv "$TXN_BACKUP/$skill" "$kept/$skill"
+    done < "$TXN_BACKUP_JOURNAL"
+    echo "  previous skills kept at $kept"
+  fi
+
   : > "$TXN_DIR/committed"
   TXN_ACTIVE=0
   rm -rf "$TXN_DIR"
@@ -297,20 +320,42 @@ install_one() {
   TXN_LOCK_OWNED=0
 }
 
+uninstall_one() {
+  local dest_root="$1" skill
+  for skill in "${SKILLS[@]}"; do
+    rm -rf "$dest_root/skills/$skill"
+    echo "  removed $dest_root/skills/$skill"
+  done
+}
+
+run_target() {
+  local label="$1" dest="$2"
+  echo "$label:"
+  if [[ "$UNINSTALL" -eq 1 ]]; then
+    uninstall_one "$dest"
+  else
+    install_one "$dest"
+  fi
+}
+
 echo "Safe Vibe installer (OS=$OS)"
 echo "source: verified local payload $ROOT"
 
-echo "Cursor:"
-install_one "$HOME/.cursor"
-
-if [[ -d "$HOME/.claude" ]]; then
-  echo "Claude Code:"
-  install_one "$HOME/.claude"
-else
-  echo "skip Claude Code (no $HOME/.claude)"
+if [[ "$TARGET" == "cursor" || "$TARGET" == "both" ]]; then
+  run_target "Cursor" "$HOME/.cursor"
 fi
 
-if [[ "$WITH_INIT" -eq 1 ]]; then
+if [[ "$TARGET" == "claude" || "$TARGET" == "both" ]]; then
+  if [[ -d "$HOME/.claude" ]]; then
+    run_target "Claude Code" "$HOME/.claude"
+  elif [[ "$TARGET" == "claude" ]]; then
+    die "no $HOME/.claude"
+  else
+    echo "skip Claude Code (no $HOME/.claude)"
+  fi
+fi
+
+if [[ "$WITH_INIT" -eq 1 && "$UNINSTALL" -eq 0 ]]; then
   mkdir -p .cursor/rules
   RULE_TMP=".cursor/rules/.safe-vibe.mdc.$$.$RANDOM"
   cat > "$RULE_TMP" << 'MDC'

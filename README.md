@@ -11,8 +11,8 @@
 ```bash
 (
   set -eu
-  SAFE_VIBE_VERSION='v0.2.1'
-  SAFE_VIBE_SHA256='1060786884b483d81129a26ad45cab5785d2ef6896d343ececd3222622d2f6cf'
+  SAFE_VIBE_VERSION='v0.2.2'
+  SAFE_VIBE_SHA256='01df1a505b42dbd9f49e8e15ca14b1d8b2900a56cfb0d46c7a69e87601c99828'
   SAFE_VIBE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/safe-vibe-download.XXXXXX")"
   trap 'rm -rf "$SAFE_VIBE_TMP"' EXIT
   SAFE_VIBE_ARCHIVE="$SAFE_VIBE_TMP/safe-vibe-$SAFE_VIBE_VERSION.tar.gz"
@@ -62,7 +62,7 @@ macOS / Linux / WSL. Cursor(`~/.cursor/skills`)에 두 스킬을 복사한다. `
 
 - **법률 자문이 아닙니다.** 적법·위법 판단, 심사 합격·준수 증명이 아닙니다.
 - **원문 PDF 없음.** 가이드·법령 본문을 포함하지 않습니다.
-- 카탈로그 버전을 올리지 마세요 (PIPA 0.2.0, KISA 0.3.0).
+- 카탈로그 내용 버전은 PIPA 0.3.0, KISA 0.3.0이다. 서버 패키지 버전과 같지 않다.
 
 레포: https://github.com/days0854/safe-vibe
 
