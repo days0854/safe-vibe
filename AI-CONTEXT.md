@@ -26,7 +26,7 @@ Use the KISA secure-coding context before or while implementing application code
 - KISA skill: https://github.com/days0854/safe-vibe/tree/main/skills/kisa-secure-coding
 - KISA catalog 0.3.0: https://raw.githubusercontent.com/days0854/safe-vibe/main/skills/kisa-secure-coding/catalog.json
 - KISA implementation cases: https://raw.githubusercontent.com/days0854/safe-vibe/main/skills/kisa-secure-coding/cases.json
-- Verified release v0.2.0: https://github.com/days0854/safe-vibe/releases/tag/v0.2.0
+- Verified release v0.2.1: https://github.com/days0854/safe-vibe/releases/tag/v0.2.1
 - Installation and SHA-256 verification: https://github.com/days0854/safe-vibe#설치
 
 The catalogs contain concise identifiers and implementation guidance. They do not reproduce source PDFs or full statutory text.

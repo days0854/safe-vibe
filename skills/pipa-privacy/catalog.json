@@ -250,7 +250,10 @@
     {
       "id": "PIPA-21",
       "name": "유출 통지·신고",
-      "article": "제34조, 제34조 제1항",
+      "article": [
+        "제34조 제2항",
+        "제34조 제4항"
+      ],
       "unsafe_signals": [
         "breach detected with no notice path",
         "notice sent with no timestamp"
@@ -274,7 +277,10 @@
     {
       "id": "PIPA-23",
       "name": "추가 이용·제공",
-      "article": "제20조, 제20조 제1항",
+      "article": [
+        "제15조 제3항",
+        "제17조 제4항"
+      ],
       "unsafe_signals": [
         "reuse collected data for a new feature with no policy update"
       ],
@@ -305,7 +311,7 @@
       "priority": "high"
     }
   ],
-  "case_count": 361,
+  "case_count": 358,
   "cases_file": "cases.json",
   "cases_note": "cases.json은 일반 구현 사례다. 실제 사고가 아니고 공식 처분이 아니다."
 }

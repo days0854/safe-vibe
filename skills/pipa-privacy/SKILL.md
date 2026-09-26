@@ -20,7 +20,7 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 
 ## 구현 사례
 
-화면을 쓰기 전에 `cases.json`에서 같은 기능의 `name`과 `mistake`를 찾는다. `sourceIds`가 의무 id이므로 그 id를 `catalog.json`에서 열어 `fix_principle`로 고친다. 사례 번호 `PIPA-1`과 의무 번호 `PIPA-1`은 다른 목록이다.
+화면을 쓰기 전에 `cases.json`에서 같은 기능의 `name`과 `mistake`를 찾는다. `sourceIds`가 의무 id이므로 그 id를 `catalog.json`에서 열어 `fix_principle`로 고친다. 사례 id는 `PIPA-CASE-n`이고, 의무 id `PIPA-n`과 다른 목록이다.
 
 사례는 일반 구현 사례다. 실제 사고도 공식 처분도 아니다. 적법·위법·적정·합격이라고 말하지 않는다.
 
@@ -73,9 +73,9 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 | PIPA-18 | 생성형 AI 학습·이용 고지 | 작성지침 부록1 | low |
 | PIPA-19 | 자동화된 결정 고지 | 제37조의2 | low |
 | PIPA-20 | 처리방침 변경 고지 | 제30조 | medium |
-| PIPA-21 | 유출 통지·신고 | 제34조, 제34조 제1항 | high |
+| PIPA-21 | 유출 통지·신고 | 제34조 제2항, 제34조 제4항 | high |
 | PIPA-22 | 개인정보취급자 감독 | 제28조 | high |
-| PIPA-23 | 추가 이용·제공 | 제20조, 제20조 제1항 | medium |
+| PIPA-23 | 추가 이용·제공 | 제15조 제3항, 제17조 제4항 | medium |
 | PIPA-24 | 목적 외 이용·제공 제한 | 제18조 | medium |
 | PIPA-25 | 수집 근거 | 제15조 제1항 | high |
 
