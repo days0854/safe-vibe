@@ -20,9 +20,11 @@ PAYLOAD_FILES = (
     "skills/kisa-secure-coding/SKILL.md",
     "skills/kisa-secure-coding/catalog.json",
     "skills/kisa-secure-coding/logo.png",
+    "skills/kisa-secure-coding/cases.json",
     "skills/pipa-privacy/SKILL.md",
     "skills/pipa-privacy/catalog.json",
     "skills/pipa-privacy/logo.png",
+    "skills/pipa-privacy/cases.json",
 )
 
 

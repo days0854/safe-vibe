@@ -2,7 +2,7 @@
 
 개인정보보호·시큐어코딩 Cursor 스킬.
 
-한국 개인정보 보호법 웹 개발 의무(PIPA catalog 0.2.0)와 KISA SW 개발보안 가이드 약점(catalog 0.3.0)을 에이전트가 코드에 바로 쓰도록 묶었다.
+한국 개인정보 보호법 웹 개발 의무(PIPA catalog 0.3.0)와 KISA SW 개발보안 가이드 약점(catalog 0.3.0)을 에이전트가 코드에 바로 쓰도록 묶었다.
 
 ## 설치
 
@@ -11,8 +11,8 @@
 ```bash
 (
   set -eu
-  SAFE_VIBE_VERSION='v0.1.0'
-  SAFE_VIBE_SHA256='a9678962ea1282e1184e21192eea1747cf2787a3517db9093f7f6a89133891e7'
+  SAFE_VIBE_VERSION='v0.2.0'
+  SAFE_VIBE_SHA256='b519a8348e6f24efd69408206e1fadb4865e618ff8eafec5d3d878c782f5c9a6'
   SAFE_VIBE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/safe-vibe-download.XXXXXX")"
   trap 'rm -rf "$SAFE_VIBE_TMP"' EXIT
   SAFE_VIBE_ARCHIVE="$SAFE_VIBE_TMP/safe-vibe-$SAFE_VIBE_VERSION.tar.gz"
@@ -53,10 +53,10 @@ macOS / Linux / WSL. Cursor(`~/.cursor/skills`)에 두 스킬을 복사한다. `
 
 | 폴더 | 이름 | 내용 |
 |---|---|---|
-| `skills/pipa-privacy` | 개인정보보호 스킬 | 가입·동의·처리방침·탈퇴·쿠키·제3자·아동 등 의무 20항 |
+| `skills/pipa-privacy` | 개인정보보호 스킬 | 가입·동의·처리방침·탈퇴·쿠키·제3자·아동·유출 통지 등 체크 25항 |
 | `skills/kisa-secure-coding` | 시큐어코딩 스킬 | 구현 49 + 설계 20 (SQL 삽입, XSS, 인증, 암호, 업로드 등) |
 
-각 폴더에 `SKILL.md`, `catalog.json`, `logo.png`가 있다. 조문 전문과 원문 PDF는 없다.
+각 폴더에 `SKILL.md`, `catalog.json`, `cases.json`, `logo.png`가 있다. `cases.json`은 일반 구현 사례다. 조문 전문과 원문 PDF는 없다.
 
 ## 주의
 

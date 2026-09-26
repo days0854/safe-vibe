@@ -3,14 +3,16 @@ set -euo pipefail
 umask 077
 
 SKILLS=(pipa-privacy kisa-secure-coding)
-FILES=(SKILL.md logo.png catalog.json)
+FILES=(SKILL.md logo.png catalog.json cases.json)
 EXPECTED_MANIFEST_PATHS=(
   "skills/kisa-secure-coding/SKILL.md"
   "skills/kisa-secure-coding/catalog.json"
   "skills/kisa-secure-coding/logo.png"
+  "skills/kisa-secure-coding/cases.json"
   "skills/pipa-privacy/SKILL.md"
   "skills/pipa-privacy/catalog.json"
   "skills/pipa-privacy/logo.png"
+  "skills/pipa-privacy/cases.json"
 )
 
 usage() {

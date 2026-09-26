@@ -37,11 +37,11 @@ verify_checksum_file() {
 test_manifest() {
   local manifest="$ROOT/manifest.sha256"
   [[ -f "$manifest" ]] || fail "manifest.sha256 is missing"
-  [[ "$(awk 'NF { count++ } END { print count + 0 }' "$manifest")" -eq 6 ]] ||
-    fail "manifest must contain exactly six entries"
+  [[ "$(awk 'NF { count++ } END { print count + 0 }' "$manifest")" -eq 8 ]] ||
+    fail "manifest must contain exactly eight entries"
   verify_checksum_file "$ROOT" "manifest.sha256" ||
     fail "manifest verification failed"
-  pass "payload manifest verifies six files"
+  pass "payload manifest verifies eight files"
 }
 
 new_test_home() {
@@ -52,7 +52,7 @@ new_test_home() {
 
 assert_installed_skill() {
   local dest_root="$1" skill="$2" file
-  for file in SKILL.md catalog.json logo.png; do
+  for file in SKILL.md catalog.json logo.png cases.json; do
     cmp "$ROOT/skills/$skill/$file" "$dest_root/skills/$skill/$file" >/dev/null ||
       fail "$dest_root $skill $file does not match payload"
   done
@@ -203,7 +203,10 @@ test_installer() {
 
 test_release() {
   local builder="$ROOT/scripts/build-release.sh"
-  local version="v0.1.0"
+  local version
+  version="$(sed -n "s/.*SAFE_VIBE_VERSION='\(v[0-9.]*\)'.*/\1/p" "$ROOT/README.md" | head -n 1)"
+  [[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
+    fail "README does not pin a release version"
   local archive="safe-vibe-$version.tar.gz"
   local expected actual
   [[ -f "$builder" ]] || fail "release builder is missing"
@@ -242,8 +245,8 @@ test_docs() {
   ! grep -Fq "raw.githubusercontent.com/days0854/safe-vibe/main/install.sh | bash" "$readme" ||
     fail "README still recommends mutable remote execution"
   [[ -f "$workflow" ]] || fail "release workflow is missing"
-  grep -Fq "SAFE_VIBE_VERSION='v0.1.0'" "$readme" ||
-    fail "README does not pin v0.1.0"
+  grep -Eq "SAFE_VIBE_VERSION='v[0-9]+\.[0-9]+\.[0-9]+'" "$readme" ||
+    fail "README does not pin a release version"
   grep -Eq "SAFE_VIBE_SHA256='[0-9a-f]{64}'" "$readme" ||
     fail "README does not pin a SHA-256 digest"
   grep -Fq -- "--proto '=https'" "$readme" ||
