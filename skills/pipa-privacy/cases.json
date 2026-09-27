@@ -4294,5 +4294,17 @@
     ],
     "typeLabel": "일반 구현 사례",
     "actualityLabel": "실제 사고 아님"
+  },
+  {
+    "n": 362,
+    "id": "PIPA-CASE-362",
+    "name": "처리방침 보유기간 칸이 비어 있음",
+    "article": "제30조 제1항",
+    "mistake": "처리방침에 보유기간 제목만 있고 기간이 비어 있다.",
+    "sourceIds": [
+      "PIPA-11"
+    ],
+    "typeLabel": "일반 구현 사례",
+    "actualityLabel": "실제 사고 아님"
   }
 ]

@@ -19246,5 +19246,65 @@
     ],
     "typeLabel": "일반 구현 사례",
     "actualityLabel": "실제 사고 아님"
+  },
+  {
+    "n": 1605,
+    "id": "KISA-1605",
+    "name": "브라우저 localStorage에 로그인 토큰",
+    "article": "CWE-312",
+    "mistake": "localStorage나 sessionStorage에 로그인 토큰·비밀번호를 넣는다.",
+    "sourceIds": [
+      "IMP-2.5"
+    ],
+    "typeLabel": "일반 구현 사례",
+    "actualityLabel": "실제 사고 아님"
+  },
+  {
+    "n": 1606,
+    "id": "KISA-1606",
+    "name": "javascript: 링크로 스크립트(XSS) 실행",
+    "article": "CWE-79",
+    "mistake": "href나 이동 주소에 javascript: 를 넣어 스크립트를 실행한다.",
+    "sourceIds": [
+      "IMP-1.4"
+    ],
+    "typeLabel": "일반 구현 사례",
+    "actualityLabel": "실제 사고 아님"
+  },
+  {
+    "n": 1607,
+    "id": "KISA-1607",
+    "name": "HTML 문서에 CSP가 없음",
+    "article": "CWE-79",
+    "mistake": "스크립트가 있는 HTML 문서에 Content-Security-Policy가 없다.",
+    "sourceIds": [
+      "IMP-1.4"
+    ],
+    "typeLabel": "일반 구현 사례",
+    "actualityLabel": "실제 사고 아님"
+  },
+  {
+    "n": 1608,
+    "id": "KISA-1608",
+    "name": "브라우저 저장값으로 관리자 여부를 정함",
+    "article": "CWE-807",
+    "mistake": "localStorage의 역할 값이나 화면 안 비밀번호 비교로 권한을 정한다.",
+    "sourceIds": [
+      "IMP-1.15"
+    ],
+    "typeLabel": "일반 구현 사례",
+    "actualityLabel": "실제 사고 아님"
+  },
+  {
+    "n": 1609,
+    "id": "KISA-1609",
+    "name": "JWT 서명 검증을 끄고 디코드",
+    "article": "CWE-347",
+    "mistake": "jwt.decode에서 verify_signature를 끄거나 alg none을 허용한다.",
+    "sourceIds": [
+      "IMP-1.15"
+    ],
+    "typeLabel": "일반 구현 사례",
+    "actualityLabel": "실제 사고 아님"
   }
 ]
