@@ -365,7 +365,7 @@
       "priority": "high"
     }
   ],
-  "case_count": 358,
+  "case_count": 359,
   "cases_file": "cases.json",
   "cases_note": "cases.json은 일반 구현 사례다. 실제 사고가 아니고 공식 처분이 아니다."
 }

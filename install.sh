@@ -303,6 +303,11 @@ install_one() {
   if [[ -s "$TXN_BACKUP_JOURNAL" ]]; then
     local kept
     kept="$TXN_PARENT/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+    local n=0
+    while [[ -e "$kept" ]]; do
+      n=$((n + 1))
+      kept="$TXN_PARENT/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)-$n"
+    done
     mkdir -p "$kept"
     while IFS= read -r skill || [[ -n "${skill:-}" ]]; do
       [[ -n "${skill:-}" ]] || continue
@@ -321,11 +326,25 @@ install_one() {
 }
 
 uninstall_one() {
-  local dest_root="$1" skill
-  for skill in "${SKILLS[@]}"; do
-    rm -rf "$dest_root/skills/$skill"
-    echo "  removed $dest_root/skills/$skill"
+  local dest_root="$1" skill kept n=0 moved=0
+  kept="$dest_root/skills/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+  while [[ -e "$kept" ]]; do
+    n=$((n + 1))
+    kept="$dest_root/skills/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)-$n"
   done
+  for skill in "${SKILLS[@]}"; do
+    if [[ -d "$dest_root/skills/$skill" ]]; then
+      if [[ "$moved" -eq 0 ]]; then
+        mkdir -p "$kept"
+      fi
+      mv "$dest_root/skills/$skill" "$kept/$skill"
+      echo "  backed up $kept/$skill"
+      moved=1
+    fi
+  done
+  if [[ "$moved" -eq 0 ]]; then
+    echo "  nothing to remove under $dest_root/skills"
+  fi
 }
 
 run_target() {
