@@ -11,8 +11,8 @@
 ```bash
 (
   set -eu
-  SAFE_VIBE_VERSION='v0.2.4'
-  SAFE_VIBE_SHA256='f741aabf9d8beb1b9534c0e228206c4c50c471ed6e4926fedba8a60a1d9c199a'
+  SAFE_VIBE_VERSION='v0.2.5'
+  SAFE_VIBE_SHA256='880c06a49acabda6899d173863672abcd7e06698a7627655dfc5546a4790c971'
   SAFE_VIBE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/safe-vibe-download.XXXXXX")"
   trap 'rm -rf "$SAFE_VIBE_TMP"' EXIT
   SAFE_VIBE_ARCHIVE="$SAFE_VIBE_TMP/safe-vibe-$SAFE_VIBE_VERSION.tar.gz"
@@ -45,7 +45,7 @@
 bash install.sh
 ```
 
-기존 `.cursor/rules/safe-vibe.mdc`는 덮어쓰지 않습니다.
+기존 `.cursor/rules/safe-vibe.mdc`는 덮어쓰지 않습니다. 제거하면 스킬 폴더를 지우기 전에 `~/.cursor` 또는 `~/.claude` 바로 아래 백업 폴더로 옮깁니다. 스킬 디렉터리 안에는 백업을 두지 않습니다.
 
 macOS / Linux / WSL. Cursor(`~/.cursor/skills`)에 두 스킬을 복사한다. `~/.claude`가 있으면 Claude Code 스킬 폴더에도 넣는다.
 

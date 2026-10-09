@@ -327,10 +327,10 @@ install_one() {
 
 uninstall_one() {
   local dest_root="$1" skill kept n=0 moved=0
-  kept="$dest_root/skills/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+  kept="$dest_root/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
   while [[ -e "$kept" ]]; do
     n=$((n + 1))
-    kept="$dest_root/skills/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)-$n"
+    kept="$dest_root/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)-$n"
   done
   for skill in "${SKILLS[@]}"; do
     if [[ -d "$dest_root/skills/$skill" ]]; then

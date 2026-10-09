@@ -52,6 +52,8 @@ def verified_files(root: Path) -> dict[str, bytes]:
     files: dict[str, bytes] = {
         "install.sh": (root / "install.sh").read_bytes(),
         "manifest.sha256": (root / "manifest.sha256").read_bytes(),
+        "LICENSE": (root / "LICENSE").read_bytes(),
+        "NOTICE": (root / "NOTICE").read_bytes(),
     }
     for relative in PAYLOAD_FILES:
         data = (root / relative).read_bytes()
