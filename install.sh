@@ -19,7 +19,7 @@ usage() {
   echo "Usage: bash install.sh [--with-init] [--recover] [--uninstall] [--target=cursor|claude|both]"
   echo "  Installs pipa-privacy and kisa-secure-coding into Cursor (and Claude Code if present)."
   echo "  --target chooses cursor, claude, or both. The default is both."
-  echo "  --uninstall removes the two skill folders from the selected target."
+  echo "  --uninstall moves the two skill folders to a backup folder beside the skills directory."
   echo "  --recover rolls back an interrupted transaction whose recorded process is no longer running."
 }
 
@@ -302,11 +302,11 @@ install_one() {
 
   if [[ -s "$TXN_BACKUP_JOURNAL" ]]; then
     local kept
-    kept="$TXN_PARENT/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+    kept="$dest_root/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)"
     local n=0
     while [[ -e "$kept" ]]; do
       n=$((n + 1))
-      kept="$TXN_PARENT/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)-$n"
+      kept="$dest_root/.safe-vibe-backup-$(date -u +%Y%m%dT%H%M%SZ)-$n"
     done
     mkdir -p "$kept"
     while IFS= read -r skill || [[ -n "${skill:-}" ]]; do
