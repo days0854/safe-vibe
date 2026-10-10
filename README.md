@@ -45,7 +45,15 @@
 bash install.sh
 ```
 
-기존 `.cursor/rules/safe-vibe.mdc`는 덮어쓰지 않습니다. 제거하면 스킬 폴더를 지우기 전에 `~/.cursor` 또는 `~/.claude` 바로 아래 백업 폴더로 옮깁니다. 스킬 디렉터리 안에는 백업을 두지 않습니다.
+기존 `.cursor/rules/safe-vibe.mdc`는 덮어쓰지 않습니다.
+
+## 제거와 되돌리기
+
+1. 스킬 폴더를 지우기 전에 `~/.cursor` 또는 `~/.claude` 바로 아래에 백업 폴더를 만든다.
+2. `~/.cursor/skills`와, 있으면 `~/.claude/skills`에서 `pipa-privacy`와 `kisa-secure-coding`을 지운다.
+3. 되돌리려면 그 백업을 원래 위치로 다시 옮긴다. 스킬 디렉터리 안에는 백업을 두지 않는다.
+
+## 복사 위치
 
 macOS / Linux / WSL. Cursor(`~/.cursor/skills`)에 두 스킬을 복사한다. `~/.claude`가 있으면 Claude Code 스킬 폴더에도 넣는다.
 
