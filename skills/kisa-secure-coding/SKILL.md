@@ -37,15 +37,15 @@ KISA 소프트웨어 개발보안 가이드 약점을 Cursor/Grok 에이전트�
 | `get_checklist` | 파일을 쓰기 전, 기능(sql / upload / auth / crypto / redirect / xss / command / session)에 맞는 IMP(+관련 DES)를 체크리스트로 삼는다. |
 | `review_code` | MCP 도구가 이 대화에 있으면 JS/Python을 쓰거나 고친 직후 호출하고 findings의 fix_principle을 반영한다. 없으면 catalog.json의 agent_checks로 대조하고, 사용자에게 검사 엔진이 연결되어 있지 않다고 말한다. |
 
+MCP 도구 `review_code`가 이 대화에 있으면, JS/Python을 쓰거나 고친 직후 그 도구를 호출하고 반환된 findings의 fix_principle을 반영한다. 도구가 없으면 catalog.json의 agent_checks로 대조하고, 사용자에게 검사 엔진이 연결되어 있지 않다고 말한다. 결과 없음은 안전이 아니다. 적법·위법·합격을 판정으로 말하지 않는다.
+
+`review_busy`면 retry_after_seconds만 기다린 뒤 한 번 다시 호출한다. 그 사이에 다른 파일을 검사하지 않는다. `input_too_large`면 파일을 200_000자 아래로 나눠 다시 호출한다. 한도를 무시하고 더 큰 입력을 넣지 않는다.
+
 ### 작업 순서
 
 1. 기능 착수 전: 관련 규칙을 `catalog.json`에서 고른다. 새 기능이면 설계 항목(`DES-*`)도 본다.
 2. 코드를 쓴다. 사용자 입력을 SQL·HTML·경로·명령·URL에 붙이지 않는다.
-3. 작성 후 `agent_checks`를 질문처럼 코드에 던져 본다. high(삽입·XSS·인증·암호·업로드)는 통과할 때까지 고친다.
-
-MCP 도구 `review_code`가 이 대화에 있으면, JS/Python을 쓰거나 고친 직후 그 도구를 호출하고 반환된 findings의 fix_principle을 반영한다. 도구가 없으면 catalog.json의 agent_checks로 대조하고, 사용자에게 검사 엔진이 연결되어 있지 않다고 말한다. 결과 없음은 안전이 아니다. 적법·위법·합격을 판정으로 말하지 않는다.
-
-`review_busy`면 retry_after_seconds만 기다린 뒤 한 번 다시 호출한다. 그 사이에 다른 파일을 검사하지 않는다. `input_too_large`면 파일을 200_000자 아래로 나눠 다시 호출한다. 한도를 무시하고 더 큰 입력을 넣지 않는다.
+3. MCP 도구 `review_code`가 이 대화에 있으면, JS/Python을 쓰거나 고친 직후 그 도구를 호출한다. 없으면 catalog.json의 agent_checks로 대조하고, 사용자에게 검사 엔진이 연결되어 있지 않다고 말한다.
 4. 시크릿·키·비밀번호를 소스에 넣지 않는다.
 
 기능 → 규칙 힌트:
