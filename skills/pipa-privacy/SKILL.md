@@ -37,13 +37,17 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 | `get_scenario` / `list_scenarios` | 시나리오 원문은 이 레포에 없다. 기능이 signup·consent·policy·withdrawal·cookies·third-party·minors면 아래 표에서 관련 의무를 고른다. **As-Is를 재현하지 말고 `fix_principle`(To-Be)로 구현한다.** |
 | `get_checklist` | 쓰기 전에 고른 의무의 `agent_when`·`fix_principle`을 체크리스트로 삼는다. |
 | `get_template` | HTML 원문 템플릿은 없다. 빠진 칸(고지 4종 등)만 채우고 법률 문장을 창작하지 않는다. |
-| `review_surface` | 작성한 UI·카피·API를 `unsafe_signals`와 대조한다. 걸리면 `fix_principle`로 고친다. |
+| `review_surface` | MCP 도구가 이 대화에 있으면 화면·문안을 쓴 직후 호출하고 findings의 fix_principle을 반영한다. 없으면 `unsafe_signals`와 대조하고, 사용자에게 검사 엔진이 꺼져 있다고 말한다. |
+
+MCP 도구 `review_surface`가 이 대화에 있으면, 화면·문안을 쓰거나 고친 직후 그 도구를 호출하고 반환된 findings의 fix_principle을 반영한다. 도구가 없으면 catalog.json의 unsafe_signals로 대조하고, 사용자에게 검사 엔진이 꺼져 있다고 말한다. 결과 없음은 안전이 아니다. 적법·위법·적정·합격을 판정으로 말하지 않는다.
+
+`review_busy`면 retry_after_seconds만 기다린 뒤 한 번 다시 호출한다. 그 사이에 다른 파일을 검사하지 않는다. `input_too_large`면 파일을 200_000자 아래로 나눠 다시 호출한다. 한도를 무시하고 더 큰 입력을 넣지 않는다.
 
 ### 작업 순서
 
 1. 사용자 요청이 어떤 화면인지 고른다 (가입 / 동의 / 방침 / 탈퇴 / 쿠키 / 제3자 / 아동 / 푸터).
 2. `catalog.json`에서 해당 `agent_when`·이름과 맞는 의무를 고른다. `priority`가 high인 것부터.
-3. 코드·카피에 `unsafe_signals`가 있는지 본다.
+3. 코드·카피에 `unsafe_signals`가 있는지 본다. MCP 도구 `review_surface`가 이 대화에 있으면 화면·문안을 쓴 직후 그 도구를 호출한다. 없으면 `unsafe_signals`로 대조하고, 사용자에게 검사 엔진이 꺼져 있다고 말한다.
 4. `fix_principle`을 적용해 고친다. 조문 번호는 참고용이며 조문 본문을 쓰지 않는다.
 5. 선택·마케팅·제3자·국외이전을 가입 필수 한 칸에 묶지 않았는지 다시 본다.
 
@@ -80,6 +84,10 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 | PIPA-25 | 수집 근거 | 제15조 제1항 | high |
 
 기능 힌트: 가입·최소수집·동의·수집 근거 = PIPA-1~4, 6, 7, 25. 아동 = PIPA-5. 제3자·위탁·국외·목적 제한 = PIPA-8~10, 23, 24. 파기·탈퇴 = PIPA-11. 방침·쿠키·푸터·책임자·권리 = PIPA-12, 13, 16, 17, 20. 암호화·접근·취급자·노출·유출 통지 = PIPA-14, 15, 21, 22. AI·자동결정 = PIPA-18, 19.
+
+## 설치
+
+콘솔 스크립트 `kisa-secure-coding-mcp`, `pipa-webdev-mcp`만 쓴다. `python -P`와 `PYTHONSAFEPATH`는 3.11부터다. 파이썬 3.10에서 `PYTHONSAFEPATH=1 python -m`은 작업 폴더의 가짜 패키지를 읽는다. KISA는 `scripts/setup_venvs`로 Semgrep 1.180.0을 서버와 다른 가상환경에 두고 `SEMGREP_BIN`을 그 실행 파일로 둔 뒤 `--doctor`가 0인지 본다. 설치 후 호스트를 다시 시작한다. `serverInfo.version`은 패키지 버전이고 카탈로그 필드는 `0.3.0`이다.
 
 ## 하지 말 것
 
