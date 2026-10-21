@@ -11,8 +11,8 @@
 ```bash
 (
   set -eu
-  SAFE_VIBE_VERSION='v0.2.7'
-  SAFE_VIBE_SHA256='3918d07ab34e4a992197aa136a8556f891d2eb9e1ec8e4a2ac8ae328fb5de098'
+  SAFE_VIBE_VERSION='v0.2.8'
+  SAFE_VIBE_SHA256='b9f0a9b57b75715d43833bbaaf869634f397a7479afcdb26e7098c3af837b357'
   SAFE_VIBE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/safe-vibe-download.XXXXXX")"
   trap 'rm -rf "$SAFE_VIBE_TMP"' EXIT
   SAFE_VIBE_ARCHIVE="$SAFE_VIBE_TMP/safe-vibe-$SAFE_VIBE_VERSION.tar.gz"
