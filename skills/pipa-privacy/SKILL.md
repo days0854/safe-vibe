@@ -41,7 +41,7 @@ description: use this when building signup, consent, privacy policy, withdrawal,
 
 MCP 도구 `review_surface`가 이 대화에 있으면, 화면·문안을 쓰거나 고친 직후 그 도구를 호출하고 반환된 findings의 fix_principle을 반영한다. 도구가 없으면 catalog.json의 unsafe_signals로 대조하고, 사용자에게 검사 엔진이 연결되어 있지 않다고 말한다. 결과 없음은 안전이 아니다. 적법·위법·적정·합격을 판정으로 말하지 않는다.
 
-`review_busy`면 retry_after_seconds만 기다린 뒤 한 번 다시 호출한다. 그 사이에 다른 파일을 검사하지 않는다. `input_too_large`면 파일을 200_000자 아래로 나눠 다시 호출한다. 한도를 무시하고 더 큰 입력을 넣지 않는다.
+`review_surface`는 한 번에 여섯 건까지 호출한다. 파일이 일곱 개 이상이면 **여섯 건씩 나눠** 두 번 이상 호출한다(12개면 6+6). `review_busy`면 그 건만, 그 응답의 `retry_after_seconds`만큼 기다린 뒤 한 번 다시 호출한다. 파일마다 초가 다르다. 가장 짧은 초로 나머지를 같이 다시 보내지 않는다. 기다리기 전에 사용자에게 가장 긴 `retry_after_seconds`를 한 번 말한다. `expected_free_seconds`는 서버가 비는 시각이고, 재시도 시각은 `retry_after_seconds`다. 두 값은 정수 초로 올라가며, `waited_seconds`는 소수 둘째 자리까지다. `reason`이 `busy`면 대기열 거절이다. 안내할 때는 응답에 적힌 초를 그대로 말한다. 기다리는 동안 다른 파일을 검사하지 않는다. `input_too_large`(200_000자)거나 Semgrep이 `skipped`/`too_many_chars`면 파일을 **100_000자 아래** 조각으로 나눠 다시 호출한다. `partial`과 `recommended_chunk_chars`를 확인한다. 한도를 무시하고 더 큰 입력을 넣지 않는다.
 
 ### 작업 순서
 
